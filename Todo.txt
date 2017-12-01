@@ -1,0 +1,58 @@
+﻿
+		TODO File 
+			for 
+	Winforms ImGUI wrapper 
+=============================
+
+
+Version : 0.1.0
+Contributers: Mohamed Shazan
+
+
+Completed
+=========
+Controls:
+	- Checkbox
+	- LinkLabel
+	- TrackBar
+	- Prograssbar
+	- Radiobutton
+	- Button
+Temporarily removed:
+    - Label
+
+To be Completed
+===============
+- Remove Timer from Imgui.cs
+- Add test case for sorting
+- Controls not responsive to updated values:
+	- Label
+    - CheckBox
+    - Button
+    - RadioButton
+- Redraw needs to be fast! There may be many ways to do this. Pick one, and only one, that works.
+	- Suspend repaint while DisplayedControls is being modified
+	- Flag controls as invisible instead of removing from DisplayedControls
+- Controls need to be freed from memory (ie, dereferenced and Dispose()d once a certain # have been allocated
+	- Easy way to do this: Delete 50 non-drawn controls once you hit 100 of them
+	- DON'T COMMIT THIS WITHOUT TESTING IT. DON'T COMMIT ANYTHING WITHOUT TESTING IT.
+- Rename SkipFrame()... update usercode so it gets called by a timer every 100 ms.
+- Make ImGui a non-static class.
+- Upload this to somewhere public + get feedback.
+- More controls:
+   - Combobox
+   - More controls from WinForms
+   - Controls based on those in ImGui
+       - Make from combination of existing controls?
+       - Use third party library?
+       - Make custom WinForms control?
+     
+NOTE FROM OZZY: Each step may create bugs! Fix these bugs before going to the next step!
+
+
+Completed Tasks
+===============
+- Give Controls IDs distinct from the text they have, have this be optional (Shazan)
+- Store ImGuiControlMetas in a Dictionary<string, ImGuiControlMeta> (Shazan)
+- Compress code (Shazan)
+- Fix redraw bug (Ozzy)
