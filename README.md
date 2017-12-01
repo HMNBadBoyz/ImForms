@@ -1,7 +1,7 @@
 # ImForms
 ImForms is an experiment in creating a wrapper class that allows you to create and get input from Windows Forms control, but in an fashion similar to Immediate Mode GUI systems such as [Dear ImGui](https://github.com/ocornut/imgui).
 
-[![https://gyazo.com/7d65757ad5b3b63ebc04d059e85d5113](https://i.gyazo.com/7d65757ad5b3b63ebc04d059e85d5113.png)](https://gyazo.com/7d65757ad5b3b63ebc04d059e85d5113)
+[![https://gyazo.com/c7c63b0968575e34d28b0431af08f92e](https://i.gyazo.com/c7c63b0968575e34d28b0431af08f92e.gif)](https://gyazo.com/c7c63b0968575e34d28b0431af08f92e)
 
 ImForms could someday become a minimal-dependency tool that can easily be integrated into an existing Windows Forms project, and allows developers to create GUIs with minimal work.
 
