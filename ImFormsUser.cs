@@ -28,9 +28,9 @@ namespace ImFormsUser
             });
         }
 
-        public async Task Main(FlowLayoutPanel panel)
+        public async Task Main(Panel panel)
         {
-            ImFormsMgr mgr = new ImFormsMgr(panel.Controls);
+            ImFormsMgr mgr = new ImFormsMgr(panel);
 
             IList<int> list = new List<int>();
 
@@ -86,9 +86,9 @@ namespace ImFormsUser
             }
         }
 
-        public async Task Main2(FlowLayoutPanel panel)
+        public async Task Main2(Panel panel)
         {
-            leftPanelMgr = new ImFormsMgr(panel.Controls);
+            leftPanelMgr = new ImFormsMgr(panel);
 
             var timer = new Timer();
             timer.Tick += (o, e) => leftPanelMgr.Refresh();

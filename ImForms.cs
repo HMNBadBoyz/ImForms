@@ -56,13 +56,13 @@ namespace ImForms
         // OH NOTE This could be configurable by the user in the _distant_ future
         private  int RedrawsPerInteraction = 1;
 
-        public ImFormsMgr(WFControlList collection)
+        public ImFormsMgr(WForms.Panel panel)
         {
             InteractedElementId = null;
             ImControls = new Dictionary<string, ImControl>();
             TCS = new TaskCompletionSource<bool>();
             CurrentSortKey = 0;
-            DisplayedControls = collection;
+            DisplayedControls = panel.Controls;
         }
 
         public void QueueRedraws(int numRedraws) { RemainingRedraws += numRedraws; }
