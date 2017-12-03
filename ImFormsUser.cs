@@ -32,7 +32,7 @@ namespace ImFormsUser
         {
             ImFormsMgr mgr = new ImFormsMgr(panel);
 
-            IList<int> list = new List<int>();
+            IList<int> list = new List<int> { 1, 2, 3 };
 
             int x = 0;
             bool displayList = false;
@@ -68,13 +68,16 @@ namespace ImFormsUser
                 {
                     var seq = reverseList ? list.Reverse() : list;
 
-                    foreach (var n in seq) { mgr.Label("[" + n + "]"); }
-
                     if (mgr.Button("Add to end")) { list.Add(list.LastOrDefault() + 1); }
 
-                    if (mgr.Button("Remove from front")) { list.RemoveAt(0); }
+                    if (list.Any() && mgr.Button("Remove from front"))
+                    {
+                        list.RemoveAt(0);
+                    }
 
                     mgr.Checkbox("Display reversed", ref reverseList);
+
+                    foreach (var n in seq) { mgr.Label("[" + n + "]"); }
                 }
 
                 mgr.Space(CompileTime.ID());
