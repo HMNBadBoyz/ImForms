@@ -10,13 +10,13 @@ namespace ImFormsUser
     {
         public int y = 0;
         public int t = 0;
-        ImFormsMgr leftPanelMgr;
+        ImFormsMgr rightPanelMgr;
 
         public ImFormsUser()
         {
             InitializeComponent();
-            Load += async (o, e) => await Main(Panel1);
-            Load += async (o, e) => await Main2(Panel2);
+            Load += async (o, e) => Main(Panel1);
+            Load += async (o, e) => Main2(Panel2);
 
             Task.Run(async () =>
             {
@@ -40,8 +40,6 @@ namespace ImFormsUser
 
             while (true)
             {
-                mgr.Label("PANEL A");
-                mgr.Space(CompileTime.ID());
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
                 mgr.Space(CompileTime.ID());
                 mgr.Label("ImForms makes it easy to display and modify one value with multiple controls");
@@ -91,39 +89,37 @@ namespace ImFormsUser
 
         public async Task Main2(Panel panel)
         {
-            leftPanelMgr = new ImFormsMgr(panel);
+            rightPanelMgr = new ImFormsMgr(panel);
 
             var timer = new Timer();
-            timer.Tick += (o, e) => leftPanelMgr.Refresh();
+            timer.Tick += (o, e) => rightPanelMgr.Refresh();
             int updateRate = 1000;
 
             while (true)
             {
-                leftPanelMgr.Label("PANEL B");
-                leftPanelMgr.Space(CompileTime.ID());
-                leftPanelMgr.Label("This ImForms panel auto-updates once every:");
-                leftPanelMgr.RadioButton("Second", ref updateRate, 1000);
-                leftPanelMgr.RadioButton("100ms", ref updateRate, 100);
-                leftPanelMgr.RadioButton("10ms", ref updateRate, 10);
-                leftPanelMgr.RadioButton("Never", ref updateRate, -1);
+                rightPanelMgr.Label("This ImForms panel auto-updates once every:");
+                rightPanelMgr.RadioButton("Second", ref updateRate, 1000);
+                rightPanelMgr.RadioButton("100ms", ref updateRate, 100);
+                rightPanelMgr.RadioButton("10ms", ref updateRate, 10);
+                rightPanelMgr.RadioButton("Never", ref updateRate, -1);
                 timer.Interval = (updateRate > 0) ? updateRate : int.MaxValue;
                 timer.Enabled = (updateRate > 0);
-                leftPanelMgr.Space(CompileTime.ID());
-                leftPanelMgr.Label("Auto-updating is an easy way to display values from other threads");
-                leftPanelMgr.Label("y = " + y, CompileTime.ID());
-                leftPanelMgr.Label("t = " + t, CompileTime.ID());
-                await leftPanelMgr.NextFrame();
+                rightPanelMgr.Space(CompileTime.ID());
+                rightPanelMgr.Label("Auto-updating is an easy way to display values from other threads");
+                rightPanelMgr.Label("y = " + y, CompileTime.ID());
+                rightPanelMgr.Label("t = " + t, CompileTime.ID());
+                await rightPanelMgr.NextFrame();
             }
         }
 
-        private void yIncrButton_Click(object sender, System.EventArgs e)
+        private void yIncrBtn_Click(object sender, System.EventArgs e)
         {
             y++;
         }
 
         private void refreshBtn_Click(object sender, System.EventArgs e)
         {
-            leftPanelMgr.Refresh();
+            rightPanelMgr.Refresh();
         }
     }
 }

@@ -74,10 +74,8 @@ namespace ImForms
             Refresh();
         }
 
-        public ImControl ProcureControl(string text, string id, ImFormsCtrlMaker maker)
+        public ImControl ProcureControl(string id, ImFormsCtrlMaker maker)
         {
-            if (id == null) { id = text; }
-
             ImControl ctrl;
             if (!ImControls.TryGetValue(id, out ctrl))
             {
@@ -110,27 +108,27 @@ namespace ImForms
 
         public void Label(string text, string id = null)
         {
-            var ctrl = ProcureControl(text, id, id1 => new WForms.Label { Name = id1, AutoSize = true });
+            var ctrl = ProcureControl(id ?? text, id1 => new WForms.Label { Name = id1, AutoSize = true });
             ctrl.WfControl.Text = text;
         }
 
         public bool Button(string text, string id = null)
         {
-            var ctrl = ProcureControl(text, id, ClickCtrlMaker<WForms.Button>);
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.Button>);
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
         public bool LinkLabel(string text, string id = null)
         {
-            var ctrl = ProcureControl(text, id, ClickCtrlMaker<WForms.LinkLabel>);
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.LinkLabel>);
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
         public bool Checkbox(string text, ref bool checkBoxChecked, string id = null)
         {
-            var ctrl = ProcureControl(text, id, ClickCtrlMaker<WForms.CheckBox>);
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.CheckBox>);
             var checkBox = ctrl.WfControl as WForms.CheckBox;
             checkBox.Text = text;
             var wasInteracted = InteractedElementId == ctrl.ID;
@@ -143,7 +141,7 @@ namespace ImForms
 
         public bool RadioButton(string text, ref int value, int checkAgainst, string id = null)
         {
-            var ctrl = ProcureControl(text, id, ClickCtrlMaker<WForms.RadioButton>);
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.RadioButton>);
             var radioButton = ctrl.WfControl as WForms.RadioButton;
             radioButton.Text = text;
             var wasInteracted = InteractedElementId == ctrl.ID;
@@ -173,7 +171,7 @@ namespace ImForms
 
             if (undrawnControls.Count == ctrlsToTriggerCleanup)
             {
-                foreach (var ctrl in undrawnControls.Take(ctrlsToRemoveForCleanup))
+                foreach (var ctrl in undrawnControls)
                 {
                     ImControls.Remove(ctrl.ID);
                 }

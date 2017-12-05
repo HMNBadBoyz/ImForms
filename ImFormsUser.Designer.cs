@@ -32,7 +32,7 @@
             this.Panel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.Panel4 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
-            this.yIncrButton = new System.Windows.Forms.Button();
+            this.yIncrBtn = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.refreshBtn = new System.Windows.Forms.Button();
             this.Panel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -71,7 +71,7 @@
             // 
             this.Panel4.AutoScroll = true;
             this.Panel4.Controls.Add(this.label1);
-            this.Panel4.Controls.Add(this.yIncrButton);
+            this.Panel4.Controls.Add(this.yIncrBtn);
             this.Panel4.Controls.Add(this.label2);
             this.Panel4.Controls.Add(this.refreshBtn);
             this.Panel4.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -92,15 +92,15 @@
     "h no hacky workarounds.\r\n\r\nBut!\r\n\r\nIt can modify values which are displayed in t" +
     "he other panels.\r\n";
             // 
-            // yIncrButton
+            // yIncrBtn
             // 
-            this.yIncrButton.Location = new System.Drawing.Point(3, 107);
-            this.yIncrButton.Name = "yIncrButton";
-            this.yIncrButton.Size = new System.Drawing.Size(75, 23);
-            this.yIncrButton.TabIndex = 0;
-            this.yIncrButton.Text = "y++";
-            this.yIncrButton.UseVisualStyleBackColor = true;
-            this.yIncrButton.Click += new System.EventHandler(this.yIncrButton_Click);
+            this.yIncrBtn.Location = new System.Drawing.Point(3, 107);
+            this.yIncrBtn.Name = "yIncrBtn";
+            this.yIncrBtn.Size = new System.Drawing.Size(75, 23);
+            this.yIncrBtn.TabIndex = 0;
+            this.yIncrBtn.Text = "y++";
+            this.yIncrBtn.UseVisualStyleBackColor = true;
+            this.yIncrBtn.Click += new System.EventHandler(this.yIncrBtn_Click);
             // 
             // label2
             // 
@@ -117,7 +117,7 @@
             this.refreshBtn.Name = "refreshBtn";
             this.refreshBtn.Size = new System.Drawing.Size(148, 23);
             this.refreshBtn.TabIndex = 1;
-            this.refreshBtn.Text = "Refresh Panel B";
+            this.refreshBtn.Text = "Refresh Right-hand Panel";
             this.refreshBtn.UseVisualStyleBackColor = true;
             this.refreshBtn.Click += new System.EventHandler(this.refreshBtn_Click);
             // 
@@ -152,7 +152,7 @@
         private System.Windows.Forms.TableLayoutPanel ParentPanel;
         private System.Windows.Forms.FlowLayoutPanel Panel2;
         private System.Windows.Forms.FlowLayoutPanel Panel4;
-        private System.Windows.Forms.Button yIncrButton;
+        private System.Windows.Forms.Button yIncrBtn;
         private System.Windows.Forms.Button refreshBtn;
         private System.Windows.Forms.FlowLayoutPanel Panel1;
         private System.Windows.Forms.Label label1;
