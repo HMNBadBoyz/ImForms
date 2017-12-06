@@ -8,3 +8,5 @@ ImForms could someday become a minimal-dependency tool that can easily be integr
 The class is in ImForms.cs. It's simple to use. Just follow the example project (ImFormsUser.\*.cs). The biggest gotcha is that you get the best performance if you assign every control a unique string identifier. The function `CompileTime.ID()` makes this easy. The second biggest gotcha is that there just aren't very many features at the moment.
 
 This project is just an experiment. If you want to see it become more fully-featured, let Ozzy know on [Twitter](https://twitter.com/OswaldHurlem).
+
+There's an equivalent project for WPF called [ImWPF](https://github.com/HMNBadBoyz/ImWPF).

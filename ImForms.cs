@@ -171,7 +171,7 @@ namespace ImForms
 
             if (undrawnControls.Count == ctrlsToTriggerCleanup)
             {
-                foreach (var ctrl in undrawnControls)
+                foreach (var ctrl in undrawnControls.Take(ctrlsToRemoveForCleanup))
                 {
                     ImControls.Remove(ctrl.ID);
                 }
