@@ -6,6 +6,7 @@ using Interop = System.Runtime.InteropServices;
 using CmplTime = System.Runtime.CompilerServices;
 using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
+using System.Diagnostics;
 
 namespace ImForms
 {
@@ -97,6 +98,11 @@ namespace ImForms
         {
             var wfCtrl = new TCtrl() { Name = id };
             wfCtrl.Click += LetImGuiHandleIt;
+            var tbar = wfCtrl as WForms.TrackBar;
+            if (tbar != null)
+            {
+                tbar.ValueChanged += LetImGuiHandleIt;
+            }
             wfCtrl.AutoSize = true;
             return wfCtrl;
         }
@@ -152,6 +158,81 @@ namespace ImForms
             return wasInteracted;
         }
 
+        public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, string id = null)
+        {
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TrackBar>);
+            var trackbar = ctrl.WfControl as WForms.TrackBar;
+            trackbar.Text = text;
+            trackbar.Minimum = minval;
+            trackbar.Maximum = maxval;
+            var wasInteracted = InteractedElementId == ctrl.ID;
+            if (wasInteracted) { value = trackbar.Value; }
+            else { trackbar.Value = value; }
+            return wasInteracted;
+        }
+
+        public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
+        {
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TrackBar>);
+            var trackbar = ctrl.WfControl as WForms.TrackBar;
+            trackbar.Text = text;
+            var unitscale = (maxval - minval)*100; 
+            trackbar.Minimum = (int)(minval*unitscale);
+            trackbar.Maximum = (int)(maxval*unitscale);
+            var wasInteracted = InteractedElementId == ctrl.ID;
+            if (wasInteracted) { value = trackbar.Value/100.0f; }
+            else { trackbar.Value = (int)(value*unitscale); }
+            return wasInteracted;
+        }
+
+        public void ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, string id = null)
+        {
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ProgressBar>);
+            var trackbar = ctrl.WfControl as WForms.ProgressBar;
+            trackbar.Text = text;
+            trackbar.Minimum = minval;
+            trackbar.Maximum = maxval;
+            trackbar.Value = value; 
+        }
+
+        public void ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
+        {
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ProgressBar>);
+            var trackbar = ctrl.WfControl as WForms.ProgressBar;
+            trackbar.Text = text;
+            var unitscale = (maxval - minval) * 100;
+            trackbar.Minimum = (int)(minval * unitscale);
+            trackbar.Maximum = (int)(maxval * unitscale);
+            trackbar.Value = (int)(value * unitscale);
+        }
+
+        private static IDictionary<string,int> ConvertEnumToDictionary(Enum e)
+        {
+            return Enum.GetValues(e.GetType()).Cast<int>().ToDictionary(x => Enum.GetName(e.GetType(), x));
+        }
+
+        public int ComboBox(string text,Enum Enumeration , string id = null)
+        {
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ComboBox>);
+            var trackbar = ctrl.WfControl as WForms.ComboBox;
+            trackbar.Text = Enumeration.GetType().Name;
+            var source = ConvertEnumToDictionary(Enumeration);
+            if (!trackbar.Items.Contains(source.Keys.First())) {
+                trackbar.Items.Clear();
+                trackbar.Items.AddRange(source.Keys.ToArray());
+            }
+            Debug.WriteLine("tbi :" +trackbar.SelectedIndex.ToString());
+            return trackbar.SelectedIndex;
+        }
+
+        public bool CheckedListBox(string text, ref bool checkBoxChecked, string id = null)
+        {
+            //TODO(shazan) : Implement this  
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.CheckedListBox>);
+            var checkedlistbox = ctrl.WfControl as WForms.CheckedListBox;
+            return false;
+        }
+        
         public void Refresh()
         {
             if (!TCS.Task.IsCompleted)

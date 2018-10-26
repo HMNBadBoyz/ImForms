@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using ImForms;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -15,8 +16,8 @@ namespace ImFormsUser
         public ImFormsUser()
         {
             InitializeComponent();
-            Load += async (o, e) => Main(Panel1);
-            Load += async (o, e) => Main2(Panel2);
+            Load += async (o, e) => await Main(Panel1);
+            Load += async (o, e) => await Main2(Panel2);
 
             Task.Run(async () =>
             {
@@ -28,25 +29,38 @@ namespace ImFormsUser
             });
         }
 
+        public enum MyEnum
+        {
+            t,
+            v,
+            f,
+            p
+        }
+
         public async Task Main(Panel panel)
         {
             ImFormsMgr mgr = new ImFormsMgr(panel);
 
             IList<int> list = new List<int> { 1, 2, 3 };
-
+            
             int x = 0;
             bool displayList = false;
             bool reverseList = false;
-
+            float f = 0;
+            MyEnum myEnum = new MyEnum();
             while (true)
             {
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
                 mgr.Space(CompileTime.ID());
                 mgr.Label("ImForms makes it easy to display and modify one value with multiple controls");
                 mgr.Label("x =");
+                mgr.Label("f ="+f,"f =");
+                mgr.Label(myEnum.ToString());
+                myEnum = (MyEnum) mgr.ComboBox("combo:" , myEnum);
                 mgr.RadioButton("0", ref x, 0);
                 mgr.RadioButton("1", ref x, 1);
-
+                mgr.SliderFloat("slider flt val:", ref f);
+                mgr.ProgressFloat("progress:", ref f);
                 int valueToAssignX = (x == 1) ? 0 : 1;
                 if (mgr.Button("x <- " + valueToAssignX, CompileTime.ID()))
                 {
