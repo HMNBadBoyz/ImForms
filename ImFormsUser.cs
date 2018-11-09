@@ -47,6 +47,7 @@ namespace ImFormsUser
             bool displayList = false;
             bool reverseList = false;
             float f = 0;
+            string teststr = "";
             MyEnum myEnum = new MyEnum();
             while (true)
             {
@@ -55,8 +56,11 @@ namespace ImFormsUser
                 mgr.Label("ImForms makes it easy to display and modify one value with multiple controls");
                 mgr.Label("x =");
                 mgr.Label("f ="+f,"f =");
-                mgr.Label(myEnum.ToString());
-                myEnum = (MyEnum) mgr.ComboBox("combo:" , myEnum);
+                mgr.TreeView(new string[] { "bdfihdf", "dshsdiusdh" });
+                var result = mgr.ComboBox("text box",myEnum);
+                mgr.Label(((MyEnum)result).ToString(),"enum_res");
+                mgr.InputMultilineText("Text box:",ref teststr);
+                mgr.Label(teststr);
                 mgr.RadioButton("0", ref x, 0);
                 mgr.RadioButton("1", ref x, 1);
                 mgr.SliderFloat("slider flt val:", ref f);

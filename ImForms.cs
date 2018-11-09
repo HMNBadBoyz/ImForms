@@ -46,6 +46,11 @@ namespace ImForms
             const int WM_SETREDRAW = 0x000B;
             SendMessage(handle, WM_SETREDRAW, new IntPtr(enable ? 1 : 0), IntPtr.Zero);
         }
+        
+        private static IDictionary<string, int> ConvertEnumToDictionary(Enum e)
+        {
+            return Enum.GetValues(e.GetType()).Cast<int>().ToDictionary(x => Enum.GetName(e.GetType(), x));
+        }
 
         private int RemainingRedraws = 0;
         private TaskCompletionSource<bool> TCS;
@@ -75,7 +80,12 @@ namespace ImForms
             Refresh();
         }
 
-        public ImControl ProcureControl(string id, ImFormsCtrlMaker maker)
+        public bool ControlExists(string id)
+        {
+            return ImControls.ContainsKey(id);
+        }
+
+        public ImControl ProcureControl(string id, ImFormsCtrlMaker maker )
         {
             ImControl ctrl;
             if (!ImControls.TryGetValue(id, out ctrl))
@@ -98,11 +108,7 @@ namespace ImForms
         {
             var wfCtrl = new TCtrl() { Name = id };
             wfCtrl.Click += LetImGuiHandleIt;
-            var tbar = wfCtrl as WForms.TrackBar;
-            if (tbar != null)
-            {
-                tbar.ValueChanged += LetImGuiHandleIt;
-            }
+            wfCtrl.TabStopChanged += LetImGuiHandleIt;
             wfCtrl.AutoSize = true;
             return wfCtrl;
         }
@@ -160,11 +166,13 @@ namespace ImForms
 
         public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, string id = null)
         {
+            var FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TrackBar>);
             var trackbar = ctrl.WfControl as WForms.TrackBar;
             trackbar.Text = text;
             trackbar.Minimum = minval;
             trackbar.Maximum = maxval;
+            if(FirstPass) trackbar.ValueChanged += LetImGuiHandleIt;
             var wasInteracted = InteractedElementId == ctrl.ID;
             if (wasInteracted) { value = trackbar.Value; }
             else { trackbar.Value = value; }
@@ -173,12 +181,14 @@ namespace ImForms
 
         public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
         {
+            var FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TrackBar>);
             var trackbar = ctrl.WfControl as WForms.TrackBar;
             trackbar.Text = text;
             var unitscale = (maxval - minval)*100; 
             trackbar.Minimum = (int)(minval*unitscale);
             trackbar.Maximum = (int)(maxval*unitscale);
+            if (FirstPass) trackbar.ValueChanged += LetImGuiHandleIt;
             var wasInteracted = InteractedElementId == ctrl.ID;
             if (wasInteracted) { value = trackbar.Value/100.0f; }
             else { trackbar.Value = (int)(value*unitscale); }
@@ -206,22 +216,61 @@ namespace ImForms
             trackbar.Value = (int)(value * unitscale);
         }
 
-        private static IDictionary<string,int> ConvertEnumToDictionary(Enum e)
+        public bool InputText(string text,ref string output, string id = null)
         {
-            return Enum.GetValues(e.GetType()).Cast<int>().ToDictionary(x => Enum.GetName(e.GetType(), x));
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TextBox>);
+            var trackbar = ctrl.WfControl as WForms.TextBox;
+            trackbar.Name = text;
+            trackbar.Multiline = false;
+            output = trackbar.Text;
+            var wasInteracted = InteractedElementId == ctrl.ID;
+            return wasInteracted;
+        }
+
+        public bool InputMultilineText(string text, ref string output, string id = null)
+        {
+            bool FirstPass = !ControlExists(id ?? text);
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TextBox>);
+            var textbox = ctrl.WfControl as WForms.TextBox;
+            if (FirstPass)
+            {
+                textbox.Name = text;
+                textbox.Multiline = true;
+                textbox.Size = new System.Drawing.Size(textbox.Size.Width, textbox.Size.Height * 2);
+            }
+            output = textbox.Text;
+            var wasInteracted = InteractedElementId == ctrl.ID;
+            return wasInteracted;
+        }
+
+        public bool TreeView(string[] texts, string id = null)
+        {
+            bool FirstPass = !ControlExists(id ?? texts[0]);
+            var ctrl = ProcureControl(id ?? texts[0], ClickCtrlMaker<WForms.TreeView>);
+            var trackbar = ctrl.WfControl as WForms.TreeView;
+            trackbar.Name = texts[0];
+            if (FirstPass)
+            {
+                foreach (var text in texts)
+                {
+                    trackbar.Nodes.Add(text, text);
+                }
+            }
+            var wasInteracted = InteractedElementId == ctrl.ID;
+            return wasInteracted;
         }
 
         public int ComboBox(string text,Enum Enumeration , string id = null)
         {
+            bool FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ComboBox>);
             var trackbar = ctrl.WfControl as WForms.ComboBox;
-            trackbar.Text = Enumeration.GetType().Name;
-            var source = ConvertEnumToDictionary(Enumeration);
-            if (!trackbar.Items.Contains(source.Keys.First())) {
-                trackbar.Items.Clear();
+            if (FirstPass) {
+                trackbar.SelectedIndexChanged += LetImGuiHandleIt;
+                trackbar.Text = Enumeration.GetType().Name;
+                var source = ConvertEnumToDictionary(Enumeration);
                 trackbar.Items.AddRange(source.Keys.ToArray());
             }
-            Debug.WriteLine("tbi :" +trackbar.SelectedIndex.ToString());
             return trackbar.SelectedIndex;
         }
 
