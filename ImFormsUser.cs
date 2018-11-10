@@ -29,14 +29,6 @@ namespace ImFormsUser
             });
         }
 
-        public enum MyEnum
-        {
-            t,
-            v,
-            f,
-            p
-        }
-
         public async Task Main(Panel panel)
         {
             ImFormsMgr mgr = new ImFormsMgr(panel);
@@ -48,7 +40,6 @@ namespace ImFormsUser
             bool reverseList = false;
             float f = 0;
             string teststr = "";
-            MyEnum myEnum = new MyEnum();
             while (true)
             {
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
@@ -58,7 +49,7 @@ namespace ImFormsUser
                 mgr.Label("f ="+f,"f =");
                 mgr.TreeView(new string[] { "bdfihdf", "dshsdiusdh" });
                 string res = "";
-                if (mgr.ListBox("text box",ref res,new string[] { "t","f","c" }))
+                if (mgr.ComboBox("text box",ref res,new string[] { "t","f","c" }))
                 {
                    mgr.Label(res);
                 }
