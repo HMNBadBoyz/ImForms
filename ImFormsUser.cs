@@ -54,11 +54,14 @@ namespace ImFormsUser
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
                 mgr.Space(CompileTime.ID());
                 mgr.Label("ImForms makes it easy to display and modify one value with multiple controls");
-                mgr.Label("x =");
+                mgr.Label("x ="+x);
                 mgr.Label("f ="+f,"f =");
                 mgr.TreeView(new string[] { "bdfihdf", "dshsdiusdh" });
-                var result = mgr.ComboBox("text box",myEnum);
-                mgr.Label(((MyEnum)result).ToString(),"enum_res");
+                string res = "";
+                if (mgr.ListBox("text box",ref res,new string[] { "t","f","c" }))
+                {
+                   mgr.Label(res);
+                }
                 mgr.InputMultilineText("Text box:",ref teststr);
                 mgr.Label(teststr);
                 mgr.RadioButton("0", ref x, 0);
@@ -66,14 +69,13 @@ namespace ImFormsUser
                 mgr.SliderFloat("slider flt val:", ref f);
                 mgr.ProgressFloat("progress:", ref f);
                 int valueToAssignX = (x == 1) ? 0 : 1;
-                if (mgr.Button("x <- " + valueToAssignX, CompileTime.ID()))
+                if (mgr.Button("x <- " + valueToAssignX))
                 {
                     x = valueToAssignX;
                 }
 
                 bool xIs1 = (x == 1);
                 mgr.Checkbox("X == 1", ref xIs1);
-                x = xIs1 ? 1 : 0;
 
                 mgr.Space(CompileTime.ID());
                 mgr.Label("Just like with other ImGui implementations, if a function isn't called for it," +

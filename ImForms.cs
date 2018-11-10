@@ -47,11 +47,6 @@ namespace ImForms
             SendMessage(handle, WM_SETREDRAW, new IntPtr(enable ? 1 : 0), IntPtr.Zero);
         }
         
-        private static IDictionary<string, int> ConvertEnumToDictionary(Enum e)
-        {
-            return Enum.GetValues(e.GetType()).Cast<int>().ToDictionary(x => Enum.GetName(e.GetType(), x));
-        }
-
         private int RemainingRedraws = 0;
         private TaskCompletionSource<bool> TCS;
         private Dictionary<string, ImControl> ImControls;
@@ -61,6 +56,8 @@ namespace ImForms
 
         // OH NOTE This could be configurable by the user in the _distant_ future
         private  int RedrawsPerInteraction = 1;
+
+        private string PrevInteractedElementId;
 
         public ImFormsMgr(WForms.Panel panel)
         {
@@ -188,6 +185,7 @@ namespace ImForms
             var unitscale = (maxval - minval)*100; 
             trackbar.Minimum = (int)(minval*unitscale);
             trackbar.Maximum = (int)(maxval*unitscale);
+            trackbar.Orientation = WForms.Orientation.Vertical;
             if (FirstPass) trackbar.ValueChanged += LetImGuiHandleIt;
             var wasInteracted = InteractedElementId == ctrl.ID;
             if (wasInteracted) { value = trackbar.Value/100.0f; }
@@ -235,13 +233,20 @@ namespace ImForms
             if (FirstPass)
             {
                 textbox.Name = text;
+                textbox.WordWrap = false;
                 textbox.Multiline = true;
-                textbox.Size = new System.Drawing.Size(textbox.Size.Width, textbox.Size.Height * 2);
+                textbox.ScrollBars = WForms.ScrollBars.Both;
+                textbox.Size = new System.Drawing.Size(textbox.Size.Width, textbox.Size.Height * 3);
+                textbox.TextChanged += (o,e)=> {
+                    textbox.SelectionStart = textbox.Text.Length;
+                    textbox.ScrollToCaret();
+                };
             }
             output = textbox.Text;
             var wasInteracted = InteractedElementId == ctrl.ID;
             return wasInteracted;
         }
+        
 
         public bool TreeView(string[] texts, string id = null)
         {
@@ -260,23 +265,44 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public int ComboBox(string text,Enum Enumeration , string id = null)
+        public bool ComboBox(string text,ref string selecteditem ,string[] items , string id = null)
         {
             bool FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ComboBox>);
             var trackbar = ctrl.WfControl as WForms.ComboBox;
+            trackbar.Text = text;
             if (FirstPass) {
                 trackbar.SelectedIndexChanged += LetImGuiHandleIt;
-                trackbar.Text = Enumeration.GetType().Name;
-                var source = ConvertEnumToDictionary(Enumeration);
-                trackbar.Items.AddRange(source.Keys.ToArray());
+                trackbar.Click -= LetImGuiHandleIt;
+                trackbar.Items.AddRange(items);
+                trackbar.DropDownStyle = WForms.ComboBoxStyle.DropDownList;
             }
-            return trackbar.SelectedIndex;
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            selecteditem = trackbar.SelectedItem as string;
+            selecteditem = selecteditem == null ? "" : selecteditem;
+            return wasInteracted;
+        }
+
+        public bool ListBox(string text, ref string selecteditem,string[] items, string id = null)
+        {
+            bool FirstPass = !ControlExists(id ?? text);
+            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ListBox>);
+            var trackbar = ctrl.WfControl as WForms.ListBox;
+            trackbar.Text = text;
+            if (FirstPass)
+            {
+                trackbar.Click -= LetImGuiHandleIt;
+                trackbar.SelectedValueChanged += LetImGuiHandleIt;
+                trackbar.Items.AddRange(items);
+            }
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            selecteditem = trackbar.SelectedItem as string;
+            selecteditem = selecteditem == null ? "" : selecteditem;
+            return wasInteracted;
         }
 
         public bool CheckedListBox(string text, ref bool checkBoxChecked, string id = null)
         {
-            //TODO(shazan) : Implement this  
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.CheckedListBox>);
             var checkedlistbox = ctrl.WfControl as WForms.CheckedListBox;
             return false;
@@ -292,7 +318,8 @@ namespace ImForms
 
         public async Task NextFrame()
         {
-            // PrevInteractedElement = InteractedElement;
+            PrevInteractedElementId = InteractedElementId;
+            
             const int ctrlsToTriggerCleanup = 100;
             const int ctrlsToRemoveForCleanup = 50;
 
