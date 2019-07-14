@@ -8,6 +8,7 @@ using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
 using System.Diagnostics;
 
+
 namespace ImForms
 {
     public static class CompileTime
@@ -36,7 +37,7 @@ namespace ImForms
         public ImControl(WForms.Control control) { WfControl = control; }
     }
 
-    public class ImFormsMgr
+    public partial class ImFormsMgr
     {
         [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
         private static extern IntPtr SendMessage(Interop.HandleRef hWnd, Int32 Msg, IntPtr wParam, IntPtr lParam);
@@ -110,32 +111,37 @@ namespace ImForms
             return wfCtrl;
         }
 
-        public void Space(string id)
+        [CompileTimeIDGen]
+        public void __Space(string id)
         {
-            Label("", id);
+            Label("");
         }
 
-        public void Label(string text, string id = null)
+        [CompileTimeIDGen]
+        public void __Label(string text, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, id1 => new WForms.Label { Name = id1, AutoSize = true });
             ctrl.WfControl.Text = text;
         }
 
-        public bool Button(string text, string id = null)
+        [CompileTimeIDGen]
+        public bool __Button(string text, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.Button>);
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
-        public bool LinkLabel(string text, string id = null)
+        [CompileTimeIDGen]
+        public bool __LinkLabel(string text, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.LinkLabel>);
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
-        public bool Checkbox(string text, ref bool checkBoxChecked, string id = null)
+        [CompileTimeIDGen]
+        public bool __Checkbox(string text, ref bool checkBoxChecked, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.CheckBox>);
             var checkBox = ctrl.WfControl as WForms.CheckBox;
@@ -148,7 +154,8 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public bool RadioButton(string text, ref int value, int checkAgainst, string id = null)
+        [CompileTimeIDGen]
+        public bool __RadioButton(string text, ref int value, int checkAgainst, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.RadioButton>);
             var radioButton = ctrl.WfControl as WForms.RadioButton;
@@ -161,7 +168,8 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, string id = null)
+        [CompileTimeIDGen]
+        public bool __SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, string id = null)
         {
             var FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TrackBar>);
@@ -176,7 +184,8 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
+        [CompileTimeIDGen]
+        public bool __SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
         {
             var FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TrackBar>);
@@ -193,7 +202,8 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public void ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, string id = null)
+        [CompileTimeIDGen]
+        public void __ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ProgressBar>);
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
@@ -203,7 +213,8 @@ namespace ImForms
             trackbar.Value = value; 
         }
 
-        public void ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
+        [CompileTimeIDGen]
+        public void __ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ProgressBar>);
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
@@ -214,7 +225,8 @@ namespace ImForms
             trackbar.Value = (int)(value * unitscale);
         }
 
-        public bool InputText(string text,ref string output, string id = null)
+        [CompileTimeIDGen]
+        public bool __InputText(string text,ref string output, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TextBox>);
             var trackbar = ctrl.WfControl as WForms.TextBox;
@@ -225,7 +237,8 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public bool InputMultilineText(string text, ref string output, string id = null)
+        [CompileTimeIDGen]
+        public bool __InputMultilineText(string text, ref string output, string id = null)
         {
             bool FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TextBox>);
@@ -247,8 +260,8 @@ namespace ImForms
             return wasInteracted;
         }
         
-
-        public bool TreeView(string[] texts, string id = null)
+        [CompileTimeIDGen]
+        public bool __TreeView(string[] texts, string id = null)
         {
             bool FirstPass = !ControlExists(id ?? texts[0]);
             var ctrl = ProcureControl(id ?? texts[0], ClickCtrlMaker<WForms.TreeView>);
@@ -265,7 +278,8 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public bool ComboBox(string text,ref string selecteditem ,string[] items , string id = null)
+        [CompileTimeIDGen]
+        public bool __ComboBox(string text,ref string selecteditem ,string[] items , string id = null)
         {
             bool FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ComboBox>);
@@ -283,7 +297,8 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public bool ListBox(string text, ref string selecteditem,string[] items, string id = null)
+        [CompileTimeIDGen]
+        public bool __ListBox(string text, ref string selecteditem,string[] items, string id = null)
         {
             bool FirstPass = !ControlExists(id ?? text);
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ListBox>);
@@ -301,7 +316,8 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public bool CheckedListBox(string text, ref bool checkBoxChecked, string id = null)
+        [CompileTimeIDGen]
+        public bool __CheckedListBox(string text, ref bool checkBoxChecked, string id = null)
         {
             var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.CheckedListBox>);
             var checkedlistbox = ctrl.WfControl as WForms.CheckedListBox;

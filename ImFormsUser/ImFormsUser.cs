@@ -43,7 +43,7 @@ namespace ImFormsUser
             while (true)
             {
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
-                mgr.Space(CompileTime.ID());
+                mgr.Space();
                 mgr.Label("ImForms makes it easy to display and modify one value with multiple controls");
                 mgr.Label("x ="+x);
                 mgr.Label("f ="+f,"f =");
@@ -68,7 +68,7 @@ namespace ImFormsUser
                 bool xIs1 = (x == 1);
                 mgr.Checkbox("X == 1", ref xIs1);
 
-                mgr.Space(CompileTime.ID());
+                mgr.Space();
                 mgr.Label("Just like with other ImGui implementations, if a function isn't called for it," +
                     " a control isn't displayed.");
                 mgr.Checkbox("Show list", ref displayList);
@@ -89,10 +89,10 @@ namespace ImFormsUser
                     foreach (var n in seq) { mgr.Label("[" + n + "]"); }
                 }
 
-                mgr.Space(CompileTime.ID());
+                mgr.Space();
                 mgr.Label("Values from other threads can be displayed when a panel refreshes.");
                 mgr.LinkLabel("Try it!");
-                mgr.Label("y = " + y, CompileTime.ID());
+                mgr.Label("y = " + y); 
 
                 await mgr.NextFrame();
             }
@@ -115,10 +115,10 @@ namespace ImFormsUser
                 rightPanelMgr.RadioButton("Never", ref updateRate, -1);
                 timer.Interval = (updateRate > 0) ? updateRate : int.MaxValue;
                 timer.Enabled = (updateRate > 0);
-                rightPanelMgr.Space(CompileTime.ID());
+                rightPanelMgr.Space();
                 rightPanelMgr.Label("Auto-updating is an easy way to display values from other threads");
-                rightPanelMgr.Label("y = " + y, CompileTime.ID());
-                rightPanelMgr.Label("t = " + t, CompileTime.ID());
+                rightPanelMgr.Label("y = " + y);
+                rightPanelMgr.Label("t = " + t);
                 await rightPanelMgr.NextFrame();
             }
         }
