@@ -11,15 +11,6 @@ using System.Diagnostics;
 
 namespace ImForms
 {
-    public static class CompileTime
-    {
-        public static string ID(
-            [CmplTime.CallerFilePath] string srcFilePath = "",
-            [CmplTime.CallerLineNumber] int srcLineNumber = 0)
-        {
-            return srcFilePath + srcLineNumber;
-        }
-    }
 
     public enum ImDraw
     {
