@@ -3,22 +3,25 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
-
   
   <ItemGroup>
-    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.88">
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="FodyWeavers.xsd" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Fody" Version="5.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\ImFormsCodeGenerator\ImFormsCodeGenerator.csproj" />
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
+    <WeaverFiles Include="$(SolutionDir)Weavers\bin\$(Configuration)\Weavers.dll" WeaverClassNames="ModuleWeaver" />
   </ItemGroup>
 
   
