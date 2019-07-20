@@ -19,7 +19,7 @@ namespace Weavers
             var methodref2 = typeof(Guid).GetMethod("NewGuid");
             var methodref3 = typeof(Guid?).GetConstructor(new Type[] { typeof(Guid) });
             var classmgrtype = this.ModuleDefinition.GetType("ImForms.ImFormsMgr");
-            var classmethods = classmgrtype.GetMethods().Where(x => x.IsPublic && x.HasCustomAttributes && x.CustomAttributes.Any(p => p.AttributeType.Name == "GenID"));
+            var classmethods = classmgrtype.GetMethods().Where(x => x.IsPublic && x.HasCustomAttributes && x.CustomAttributes.Any(p => p.AttributeType.Name == "GenIDAttribute"));
             foreach (var method in classmethods)
             {
                 method.Body.SimplifyMacros();
@@ -88,8 +88,8 @@ namespace Weavers
                 IL.InsertAfter(IL6, IL7);
                 IL.InsertAfter(IL7, IL8);
                 IL.InsertAfter(IL8, IL9);
-                
                 method.Body.OptimizeMacros();
+                method.Body.Optimize();
             }
         }
 

@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace ImForms
 {
-    public class GenID : Attribute
+    public class GenIDAttribute : Attribute
     {
 
     }
