@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
-    <WeaverFiles Include="$(SolutionDir)Weavers\bin\$(Configuration)\Weavers.dll" WeaverClassNames="ModuleWeaver" />
+    <WeaverFiles Include="$(SolutionDir)Weavers\bin\$(Configuration)\Weavers.dll" WeaverClassNames="ImFormsWeaver" />
   </ItemGroup>
 
   

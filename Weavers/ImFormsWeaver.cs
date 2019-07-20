@@ -10,7 +10,7 @@ using Mono.Cecil.Rocks;
 
 namespace Weavers
 {
-    public class ModuleWeaver : BaseModuleWeaver
+    public class ImFormsWeaver : BaseModuleWeaver
     {
 
         public override void Execute()
