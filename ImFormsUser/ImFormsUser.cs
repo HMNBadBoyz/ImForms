@@ -40,13 +40,14 @@ namespace ImFormsUser
             bool reverseList = false;
             float f = 0;
             string teststr = "";
+            var cacheid = Guid.NewGuid();
             while (true)
             {
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
                 mgr.Space();
                 mgr.Label("ImForms makes it easy to display and modify one value with multiple controls");
                 mgr.Label("x ="+x);
-                mgr.Label("f ="+f,"f =");
+                mgr.Label("f ="+f,cacheid);
                 mgr.TreeView(new string[] { "bdfihdf", "dshsdiusdh" });
                 string res = "";
                 if (mgr.ComboBox("text box",ref res,new string[] { "t","f","c" }))

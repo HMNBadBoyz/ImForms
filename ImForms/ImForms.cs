@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace ImForms
 {
-    public class CompileTime : Attribute
+    public class GenID : Attribute
     {
 
     }
@@ -27,7 +27,7 @@ namespace ImForms
         public readonly WForms.Control WfControl;
         public ImDraw State { get; set; }
         public int SortKey { get; set; }
-        public string ID { get { return WfControl.Name; } }
+        public Guid ID { get; set; }
 
         public ImControl(WForms.Control control) { WfControl = control; }
     }
@@ -45,20 +45,20 @@ namespace ImForms
         
         private int RemainingRedraws = 0;
         private TaskCompletionSource<bool> TCS;
-        private Dictionary<string, ImControl> ImControls;
+        private Dictionary<Guid?, ImControl> ImControls;
         public WFControlList DisplayedControls;
         private int CurrentSortKey;
-        private string InteractedElementId;
+        private Guid? InteractedElementId;
 
         // OH NOTE This could be configurable by the user in the _distant_ future
         private  int RedrawsPerInteraction = 1;
 
-        private string PrevInteractedElementId;
+        private Guid? PrevInteractedElementId;
 
         public ImFormsMgr(WForms.Panel panel)
         {
             InteractedElementId = null;
-            ImControls = new Dictionary<string, ImControl>();
+            ImControls = new Dictionary<Guid?, ImControl>();
             TCS = new TaskCompletionSource<bool>();
             CurrentSortKey = 0;
             DisplayedControls = panel.Controls;
@@ -68,17 +68,17 @@ namespace ImForms
 
         private void LetImGuiHandleIt(object sender, EventArgs args)
         {
-            InteractedElementId = ((WForms.Control)sender).Name;
+            InteractedElementId = Guid.Parse( ((WForms.Control)sender).Name);
             QueueRedraws(RedrawsPerInteraction);
             Refresh();
         }
 
-        public bool ControlExists(string id)
+        public bool ControlExists(Guid? id)
         {
             return ImControls.ContainsKey(id);
         }
 
-        public ImControl ProcureControl(string id, ImFormsCtrlMaker maker )
+        public ImControl ProcureControl(Guid? id, ImFormsCtrlMaker maker )
         {
             ImControl ctrl;
             if (!ImControls.TryGetValue(id, out ctrl))
@@ -94,57 +94,49 @@ namespace ImForms
             return ctrl;
         }
 
-        public delegate WForms.Control ImFormsCtrlMaker(string id);
+        public delegate WForms.Control ImFormsCtrlMaker(Guid? id);
 
         // Generic maker 
-        public WForms.Control ClickCtrlMaker<TCtrl>(string id) where TCtrl : WForms.Control, new()
+        public WForms.Control ClickCtrlMaker<TCtrl>(Guid? id) where TCtrl : WForms.Control, new()
         {
-            var wfCtrl = new TCtrl() { Name = id };
+            var wfCtrl = new TCtrl() { Name = id?.ToString() };
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
             wfCtrl.AutoSize = true;
             return wfCtrl;
         }
 
-        [CompileTime]
-        public void Space(string id = null)
+
+        [GenID]
+        public void Space(Guid? id = null)
         {
             Label("",id);
         }
-        [CompileTime]
-        public void Label(string text, string id = null)
+        public void Label(string text, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, id1 => new WForms.Label { Name = id1, AutoSize = true });
+            if (id == null) id = Guid.NewGuid();
+            var ctrl = ProcureControl(id , id1 => new WForms.Label { Name = id1?.ToString(), AutoSize = true });
             ctrl.WfControl.Text = text;
         }
-        /*
-        [CompileTime]
-        public void Label(string text, string id = null,[System.Runtime.CompilerServices.CallerFilePath]string path=null , [System.Runtime.CompilerServices.CallerLineNumber]int line = 0)
+        
+        public bool Button(string text, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, id1 => new WForms.Label { Name = id1, AutoSize = true });
-            ctrl.WfControl.Text = text;
-        }
-        */
-        [CompileTime]
-        public bool Button(string text, string id = null)
-        {
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.Button>);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.Button>);
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
-        [CompileTime]
-        public bool LinkLabel(string text, string id = null)
+        public bool LinkLabel(string text, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.LinkLabel>);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.LinkLabel>);
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
         
-        public bool Checkbox(string text, ref bool checkBoxChecked, string id = null)
+        public bool Checkbox(string text, ref bool checkBoxChecked, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.CheckBox>);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.CheckBox>);
             var checkBox = ctrl.WfControl as WForms.CheckBox;
             checkBox.Text = text;
             var wasInteracted = InteractedElementId == ctrl.ID;
@@ -156,9 +148,9 @@ namespace ImForms
         }
 
         
-        public bool RadioButton(string text, ref int value, int checkAgainst, string id = null)
+        public bool RadioButton(string text, ref int value, int checkAgainst, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.RadioButton>);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.RadioButton>);
             var radioButton = ctrl.WfControl as WForms.RadioButton;
             radioButton.Text = text;
             var wasInteracted = InteractedElementId == ctrl.ID;
@@ -170,10 +162,10 @@ namespace ImForms
         }
 
         
-        public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, string id = null)
+        public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, Guid? id = null)
         {
-            var FirstPass = !ControlExists(id ?? text);
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TrackBar>);
+            var FirstPass = !ControlExists(id);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.TrackBar>);
             var trackbar = ctrl.WfControl as WForms.TrackBar;
             trackbar.Text = text;
             trackbar.Minimum = minval;
@@ -186,10 +178,10 @@ namespace ImForms
         }
 
         
-        public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
+        public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, Guid? id = null)
         {
-            var FirstPass = !ControlExists(id ?? text);
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TrackBar>);
+            var FirstPass = !ControlExists(id);
+            var ctrl = ProcureControl(id , ClickCtrlMaker<WForms.TrackBar>);
             var trackbar = ctrl.WfControl as WForms.TrackBar;
             trackbar.Text = text;
             var unitscale = (maxval - minval)*100; 
@@ -204,9 +196,9 @@ namespace ImForms
         }
 
         
-        public void ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, string id = null)
+        public void ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ProgressBar>);
+            var ctrl = ProcureControl(id , ClickCtrlMaker<WForms.ProgressBar>);
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
             trackbar.Text = text;
             trackbar.Minimum = minval;
@@ -215,9 +207,9 @@ namespace ImForms
         }
 
         
-        public void ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, string id = null)
+        public void ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ProgressBar>);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.ProgressBar>);
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
             trackbar.Text = text;
             var unitscale = (maxval - minval) * 100;
@@ -227,9 +219,9 @@ namespace ImForms
         }
 
         
-        public bool InputText(string text,ref string output, string id = null)
+        public bool InputText(string text,ref string output, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TextBox>);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.TextBox>);
             var trackbar = ctrl.WfControl as WForms.TextBox;
             trackbar.Name = text;
             trackbar.Multiline = false;
@@ -239,10 +231,10 @@ namespace ImForms
         }
 
         
-        public bool InputMultilineText(string text, ref string output, string id = null)
+        public bool InputMultilineText(string text, ref string output, Guid? id = null)
         {
-            bool FirstPass = !ControlExists(id ?? text);
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.TextBox>);
+            bool FirstPass = !ControlExists(id);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.TextBox>);
             var textbox = ctrl.WfControl as WForms.TextBox;
             if (FirstPass)
             {
@@ -262,10 +254,10 @@ namespace ImForms
         }
         
         
-        public bool TreeView(string[] texts, string id = null)
+        public bool TreeView(string[] texts, Guid? id = null)
         {
-            bool FirstPass = !ControlExists(id ?? texts[0]);
-            var ctrl = ProcureControl(id ?? texts[0], ClickCtrlMaker<WForms.TreeView>);
+            bool FirstPass = !ControlExists(id);
+            var ctrl = ProcureControl(id,ClickCtrlMaker<WForms.TreeView>);
             var trackbar = ctrl.WfControl as WForms.TreeView;
             trackbar.Name = texts[0];
             if (FirstPass)
@@ -280,10 +272,10 @@ namespace ImForms
         }
 
         
-        public bool ComboBox(string text,ref string selecteditem ,string[] items , string id = null)
+        public bool ComboBox(string text,ref string selecteditem ,string[] items , Guid? id = null)
         {
-            bool FirstPass = !ControlExists(id ?? text);
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ComboBox>);
+            bool FirstPass = !ControlExists(id);
+            var ctrl = ProcureControl(id,ClickCtrlMaker<WForms.ComboBox>);
             var trackbar = ctrl.WfControl as WForms.ComboBox;
             trackbar.Text = text;
             if (FirstPass) {
@@ -299,10 +291,11 @@ namespace ImForms
         }
 
         
-        public bool ListBox(string text, ref string selecteditem,string[] items, string id = null)
+
+        public bool ListBox(string text, ref string selecteditem,string[] items, Guid? id = null)
         {
-            bool FirstPass = !ControlExists(id ?? text);
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.ListBox>);
+            bool FirstPass = !ControlExists(id);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.ListBox>);
             var trackbar = ctrl.WfControl as WForms.ListBox;
             trackbar.Text = text;
             if (FirstPass)
@@ -318,9 +311,9 @@ namespace ImForms
         }
 
         
-        public bool CheckedListBox(string text, ref bool checkBoxChecked, string id = null)
+        public bool CheckedListBox(string text, ref bool checkBoxChecked, Guid? id = null)
         {
-            var ctrl = ProcureControl(id ?? text, ClickCtrlMaker<WForms.CheckedListBox>);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.CheckedListBox>);
             var checkedlistbox = ctrl.WfControl as WForms.CheckedListBox;
             return false;
         }
