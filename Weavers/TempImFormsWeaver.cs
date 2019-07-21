@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Fody;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -10,17 +8,19 @@ using Mono.Cecil.Rocks;
 
 namespace Weavers
 {
-    public class ImFormsWeaver : BaseModuleWeaver
+    public class TempImFormsWeaver : BaseModuleWeaver
     {
         public override void Execute()
         {
             var methodref = typeof(Guid?).GetProperty("HasValue").GetMethod;
-            var methodref2 = typeof(Exception).GetConstructor(new Type[] { typeof(string) });
+            var methodref2 = typeof(Guid).GetMethod("NewGuid");
+            var methodref3 = typeof(Guid?).GetConstructor(new Type[] { typeof(Guid) });
             var classmgrtype = this.ModuleDefinition.GetType("ImForms.ImFormsMgr");
-            var classmethods = classmgrtype.GetMethods().Where(x => x.IsPublic && x.HasCustomAttributes && x.CustomAttributes.Any(p => p.AttributeType.Name == "CheckIDAttribute"));
+            var classmethods = classmgrtype.GetMethods().Where(x => x.IsPublic && x.HasCustomAttributes && x.CustomAttributes.Any(p => p.AttributeType.Name == "GenIDAttribute"));
             foreach (var method in classmethods)
             {
                 method.Body.SimplifyMacros();
+                method.CustomAttributes.Clear();
                 method.Body.InitLocals = true;
                 method.Body.Variables.Add(new VariableDefinition(ModuleDefinition.ImportReference(typeof(bool))));
                 method.Body.LocalVarToken = method.Body.Variables.Last().VariableType.MetadataToken;
@@ -57,8 +57,8 @@ namespace Weavers
                 var IL1 = Instruction.Create(OpCodes.Call, ModuleDefinition.ImportReference(methodref));
                 var IL2 = Instruction.Create(OpCodes.Ldc_I4_0);
                 var IL3 = Instruction.Create(OpCodes.Ceq);
-                Instruction IL4; 
-                Instruction IL5; 
+                Instruction IL4;
+                Instruction IL5;
                 if (idparamindex <= 3)
                 {
                     IL4 = Instruction.Create(stloc);
@@ -71,10 +71,9 @@ namespace Weavers
                 }
 
                 var IL6 = Instruction.Create(OpCodes.Brfalse_S, secondinstruction);
-                var IL7 = Instruction.Create(OpCodes.Nop);
-                var IL8 = Instruction.Create(OpCodes.Ldstr, $"Called {method.Name} with { method.Parameters.Last().Name} == null. Is ImForms.Fody correctly configured ?");
-                var IL9 = Instruction.Create(OpCodes.Newobj, ModuleDefinition.ImportReference(methodref2));
-                var IL10 = Instruction.Create(OpCodes.Throw);
+                var IL7 = Instruction.Create(OpCodes.Ldarga_S, method.Parameters.Last());
+                var IL8 = Instruction.Create(OpCodes.Call, ModuleDefinition.ImportReference(methodref2));
+                var IL9 = Instruction.Create(OpCodes.Call, ModuleDefinition.ImportReference(methodref3));
 
                 IL.InsertAfter(firstinstruction, IL0);
                 IL.InsertAfter(IL0, IL1);
@@ -86,7 +85,6 @@ namespace Weavers
                 IL.InsertAfter(IL6, IL7);
                 IL.InsertAfter(IL7, IL8);
                 IL.InsertAfter(IL8, IL9);
-                IL.InsertAfter(IL9, IL10);
                 method.Body.OptimizeMacros();
                 method.Body.Optimize();
             }

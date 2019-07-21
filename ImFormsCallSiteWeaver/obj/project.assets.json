@@ -20,6 +20,16 @@
           "build/FodyHelpers.props": {},
           "build/FodyHelpers.targets": {}
         }
+      },
+      "ImForms/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6.2",
+        "compile": {
+          "bin/placeholder/ImForms.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ImForms.dll": {}
+        }
       }
     },
     ".NETFramework,Version=v4.7.2/win": {
@@ -40,6 +50,16 @@
         "build": {
           "build/FodyHelpers.props": {},
           "build/FodyHelpers.targets": {}
+        }
+      },
+      "ImForms/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6.2",
+        "compile": {
+          "bin/placeholder/ImForms.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ImForms.dll": {}
         }
       }
     },
@@ -62,6 +82,16 @@
           "build/FodyHelpers.props": {},
           "build/FodyHelpers.targets": {}
         }
+      },
+      "ImForms/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6.2",
+        "compile": {
+          "bin/placeholder/ImForms.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ImForms.dll": {}
+        }
       }
     },
     ".NETFramework,Version=v4.7.2/win-x86": {
@@ -82,6 +112,16 @@
         "build": {
           "build/FodyHelpers.props": {},
           "build/FodyHelpers.targets": {}
+        }
+      },
+      "ImForms/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6.2",
+        "compile": {
+          "bin/placeholder/ImForms.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ImForms.dll": {}
         }
       }
     }
@@ -107,11 +147,17 @@
         "lib/netstandard2.0/Mono.Cecil.dll",
         "lib/netstandard2.0/Mono.Cecil.pdb"
       ]
+    },
+    "ImForms/1.0.0": {
+      "type": "project",
+      "path": "../ImForms/ImForms.csproj",
+      "msbuildProject": "../ImForms/ImForms.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.7.2": [
-      "FodyHelpers >= 5.1.1"
+      "FodyHelpers >= 5.1.1",
+      "ImForms >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -121,11 +167,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\shazan\\ImForms\\Weavers\\ImFormsWeaver.csproj",
-      "projectName": "ImFormsWeaver",
-      "projectPath": "E:\\shazan\\ImForms\\Weavers\\ImFormsWeaver.csproj",
+      "projectUniqueName": "E:\\shazan\\ImForms\\ImFormsCallSiteWeaver\\ImFormsCallSiteWeaver.csproj",
+      "projectName": "ImFormsCallSiteWeaver",
+      "projectPath": "E:\\shazan\\ImForms\\ImFormsCallSiteWeaver\\ImFormsCallSiteWeaver.csproj",
       "packagesPath": "C:\\Users\\Shaz\\.nuget\\packages\\",
-      "outputPath": "E:\\shazan\\ImForms\\Weavers\\obj\\",
+      "outputPath": "E:\\shazan\\ImForms\\ImFormsCallSiteWeaver\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "fallbackFolders": [
@@ -146,7 +192,11 @@
       },
       "frameworks": {
         "net472": {
-          "projectReferences": {}
+          "projectReferences": {
+            "E:\\shazan\\ImForms\\ImForms\\ImForms.csproj": {
+              "projectPath": "E:\\shazan\\ImForms\\ImForms\\ImForms.csproj"
+            }
+          }
         }
       }
     },

@@ -5,6 +5,7 @@ VisualStudioVersion = 16.0.28917.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImFormsUser", "ImFormsUser\ImFormsUser.csproj", "{CE58E436-C135-4C51-8BCE-72B394E6F218}"
 	ProjectSection(ProjectDependencies) = postProject
+		{59457748-D30A-4677-82E9-8620712726E0} = {59457748-D30A-4677-82E9-8620712726E0}
 		{61FE935C-691F-4F58-B320-0BA562B9FC97} = {61FE935C-691F-4F58-B320-0BA562B9FC97}
 	EndProjectSection
 EndProject
@@ -14,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImForms", "ImForms\ImForms.
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImFormsWeaver", "Weavers\ImFormsWeaver.csproj", "{04F8964E-A030-4818-9ACB-084648DDE433}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImFormsCallSiteWeaver", "ImFormsCallSiteWeaver\ImFormsCallSiteWeaver.csproj", "{59457748-D30A-4677-82E9-8620712726E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +36,10 @@ Global
 		{04F8964E-A030-4818-9ACB-084648DDE433}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04F8964E-A030-4818-9ACB-084648DDE433}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04F8964E-A030-4818-9ACB-084648DDE433}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59457748-D30A-4677-82E9-8620712726E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59457748-D30A-4677-82E9-8620712726E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59457748-D30A-4677-82E9-8620712726E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59457748-D30A-4677-82E9-8620712726E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

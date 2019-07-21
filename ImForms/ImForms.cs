@@ -16,6 +16,19 @@ namespace ImForms
 
     }
 
+    public class CheckIDAttribute : Attribute
+    {
+
+    }
+
+    public class ImFormsIDException : Exception
+    {
+        public ImFormsIDException(string message) : base(message)
+        {
+        }
+    }
+
+
     public enum ImDraw
     {
         NotDrawn,
@@ -27,7 +40,7 @@ namespace ImForms
         public readonly WForms.Control WfControl;
         public ImDraw State { get; set; }
         public int SortKey { get; set; }
-        public Guid ID { get; set; }
+        public Guid? ID { get; set; }
 
         public ImControl(WForms.Control control) { WfControl = control; }
     }
@@ -107,20 +120,19 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public void Space(Guid? id = null)
         {
             Label("",id);
         }
-
-        [GenID]
+        [CheckID]
         public void Label(string text, Guid? id = null)
         {
             var ctrl = ProcureControl(id , id1 => new WForms.Label { Name = id1?.ToString(), AutoSize = true });
             ctrl.WfControl.Text = text;
         }
 
-        [GenID]
+        [CheckID]
         public bool Button(string text, Guid? id = null)
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.Button>);
@@ -128,8 +140,8 @@ namespace ImForms
             return InteractedElementId == ctrl.ID;
         }
 
-        [GenID]
-        public bool LinkLabel(string text, Guid? id = null)
+        [CheckID]
+        public bool LinkLabel(string text, Guid? id )
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.LinkLabel>);
             ctrl.WfControl.Text = text;
@@ -137,7 +149,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool Checkbox(string text, ref bool checkBoxChecked, Guid? id = null)
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.CheckBox>);
@@ -152,7 +164,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool RadioButton(string text, ref int value, int checkAgainst, Guid? id = null)
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.RadioButton>);
@@ -167,7 +179,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, Guid? id = null)
         {
             var FirstPass = !ControlExists(id);
@@ -184,7 +196,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, Guid? id = null)
         {
             var FirstPass = !ControlExists(id);
@@ -203,7 +215,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public void ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, Guid? id = null)
         {
             var ctrl = ProcureControl(id , ClickCtrlMaker<WForms.ProgressBar>);
@@ -215,7 +227,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public void ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, Guid? id = null)
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.ProgressBar>);
@@ -228,7 +240,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool InputText(string text,ref string output, Guid? id = null)
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.TextBox>);
@@ -241,7 +253,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool InputMultilineText(string text, ref string output, Guid? id = null)
         {
             bool FirstPass = !ControlExists(id);
@@ -265,7 +277,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool TreeView(string[] texts, Guid? id = null)
         {
             bool FirstPass = !ControlExists(id);
@@ -284,7 +296,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool ComboBox(string text,ref string selecteditem ,string[] items , Guid? id = null)
         {
             bool FirstPass = !ControlExists(id);
@@ -305,7 +317,7 @@ namespace ImForms
 
 
 
-        [GenID]
+        [CheckID]
         public bool ListBox(string text, ref string selecteditem,string[] items, Guid? id = null)
         {
             bool FirstPass = !ControlExists(id);
@@ -325,7 +337,7 @@ namespace ImForms
         }
 
 
-        [GenID]
+        [CheckID]
         public bool CheckedListBox(string text, ref bool checkBoxChecked, Guid? id = null)
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.CheckedListBox>);

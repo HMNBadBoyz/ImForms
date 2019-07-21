@@ -92,7 +92,8 @@ namespace ImFormsUser
 
                 mgr.Space();
                 mgr.Label("Values from other threads can be displayed when a panel refreshes.");
-                mgr.LinkLabel("Try it!");
+                Guid ImFormsCallsiteID_ImFormsUser_cs_line_95 = Guid.NewGuid();
+                mgr.LinkLabel("Try it!",ImFormsCallsiteID_ImFormsUser_cs_line_95);
                 mgr.Label("y = " + y); 
 
                 await mgr.NextFrame();
