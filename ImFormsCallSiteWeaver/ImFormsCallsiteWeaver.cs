@@ -14,28 +14,30 @@ namespace Weavers
         public override void Execute()
         {
             var newguidmethod = typeof(Guid).GetMethod("NewGuid");
-            var allmethods = this.ModuleDefinition.GetAllTypes().SelectMany(x => x.Methods.AsEnumerable()).Where( x => x.HasBody);
-            var imformsclassmethods = typeof(ImFormsMgr).GetMethods().Where(x => x.IsPublic  && x.CustomAttributes.Any(p => p.AttributeType.Name == "CheckIDAttribute")).Select( x => this.ModuleDefinition.ImportReference(x));
-            var calledmethods = new List<string>(imformsclassmethods.Select(x=>x.FullName));
+            var guidtype = typeof(Guid);
+            var nullableguidconstructor = typeof(Guid?).GetConstructor(new Type[] { typeof(Guid) });
+            var allmethods = this.ModuleDefinition.GetAllTypes().SelectMany(x => x.Methods.AsEnumerable()).Where(x => x.HasBody);
+            var imformsclassmethods = typeof(ImFormsMgr).GetMethods().Where(x => x.IsPublic && x.CustomAttributes.Any(p => p.AttributeType.Name == "CheckIDAttribute")).Select(x => ModuleDefinition.ImportReference(x));
+            var calledmethods = new List<string>();
             if (allmethods.Count() > 0)
             {
                 foreach (var method in allmethods)
                 {
-
-                    var iscalled = method.Body.Instructions.Any(x => x.OpCode == OpCodes.Callvirt && imformsclassmethods.Any(y => y == x.Operand as MethodReference));
-                    calledmethods.AddRange(method.Body.Instructions.Where(x => x.OpCode == OpCodes.Callvirt && imformsclassmethods.Any()).Select(x=>x.ToString()));
-                    if (iscalled)
+                    var IL = method.Body.GetILProcessor();
+                    var imformsinstructions = method.Body.Instructions.Where(x => x.OpCode == OpCodes.Callvirt)
+                        .Where(x => imformsclassmethods.Any(y => y.FullName == (x.Operand as MethodReference).FullName));
+                    foreach (var imins in imformsinstructions)
                     {
-                        var IL = method.Body.GetILProcessor();
-                        var imformsinstructions = method.Body.Instructions.Where(x => x.OpCode == OpCodes.Callvirt && imformsclassmethods.Any(y => y == x.Operand));
-                        foreach (var imins in imformsinstructions)
-                        {
-                            IL.InsertAfter(imins, IL.Create(OpCodes.Nop));
-                            IL.InsertAfter(imins, IL.Create(OpCodes.Ldstr,"testd"));
-                            IL.InsertAfter(imins, IL.Create(OpCodes.Ldstr,"testds"));
-                            IL.InsertAfter(imins, IL.Create(OpCodes.Nop));
-                        }
-                        
+                        var methodref = (imins.Operand as MethodReference);
+                        calledmethods.Add(methodref.FullName);
+                        var startinstruction = imins.Previous.Previous.Previous.Previous.Previous.Previous;
+                        var IL0 = IL.Create(OpCodes.Ldarg_0);
+                        var IL1 = IL.Create(OpCodes.Call, ModuleDefinition.ImportReference(newguidmethod));
+                        //var IL2 = IL.Create(OpCodes.Stfld, ModuleDefinition.ImportReference(guidtype));
+                        //IL.InsertBefore(startinstruction, IL0);
+                        //IL.InsertAfter(IL0, IL1);
+                        //IL.InsertAfter(IL1, IL2);
+
                     }
                 }
             }
@@ -46,7 +48,7 @@ namespace Weavers
 
             AddConstructor(type);
 
-            AddHelloWorld(type,allmethodnames);
+            AddHelloWorld(type, allmethodnames);
 
             ModuleDefinition.Types.Add(type);
 
@@ -127,7 +129,7 @@ namespace Weavers
             newType.Methods.Add(method);
         }
 
-        void AddHelloWorld(TypeDefinition newType , string str)
+        void AddHelloWorld(TypeDefinition newType, string str)
         {
             var method = new MethodDefinition("World", MethodAttributes.Public, TypeSystem.StringReference);
             var processor = method.Body.GetILProcessor();

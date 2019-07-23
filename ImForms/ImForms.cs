@@ -141,7 +141,7 @@ namespace ImForms
         }
 
         [CheckID]
-        public bool LinkLabel(string text, Guid? id )
+        public bool LinkLabel(string text, Guid? id = null)
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.LinkLabel>);
             ctrl.WfControl.Text = text;
