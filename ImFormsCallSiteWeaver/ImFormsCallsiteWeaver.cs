@@ -6,6 +6,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using ImForms;
+using System.Diagnostics;
 
 namespace Weavers
 {
@@ -15,34 +16,83 @@ namespace Weavers
         {
             var newguidmethod = typeof(Guid).GetMethod("NewGuid");
             var guidtype = typeof(Guid);
-            var nullableguidconstructor = typeof(Guid?).GetConstructor(new Type[] { typeof(Guid) });
+            var nullableguidtype = typeof(Guid?);
+            var tagaatr = typeof(TagAttribute).GetConstructor(Type.EmptyTypes);
+            var nullableguidconstructor = typeof(Guid?).GetConstructor(new[] { typeof(Guid) });
             var allmethods = this.ModuleDefinition.GetAllTypes().SelectMany(x => x.Methods.AsEnumerable()).Where(x => x.HasBody);
             var imformsclassmethods = typeof(ImFormsMgr).GetMethods().Where(x => x.IsPublic && x.CustomAttributes.Any(p => p.AttributeType.Name == "CheckIDAttribute")).Select(x => ModuleDefinition.ImportReference(x));
             var calledmethods = new List<string>();
             if (allmethods.Count() > 0)
             {
+                var fieldinsdeict = new Dictionary<Instruction, FieldDefinition>();
                 foreach (var method in allmethods)
                 {
+                    
                     var IL = method.Body.GetILProcessor();
+                    method.Body.SimplifyMacros();
                     var imformsinstructions = method.Body.Instructions.Where(x => x.OpCode == OpCodes.Callvirt)
                         .Where(x => imformsclassmethods.Any(y => y.FullName == (x.Operand as MethodReference).FullName));
-                    foreach (var imins in imformsinstructions)
+                    if (imformsinstructions.Count() > 0)
                     {
-                        var methodref = (imins.Operand as MethodReference);
-                        calledmethods.Add(methodref.FullName);
-                        var startinstruction = imins.Previous.Previous.Previous.Previous.Previous.Previous;
-                        var IL0 = IL.Create(OpCodes.Ldarg_0);
-                        var IL1 = IL.Create(OpCodes.Call, ModuleDefinition.ImportReference(newguidmethod));
-                        //var IL2 = IL.Create(OpCodes.Stfld, ModuleDefinition.ImportReference(guidtype));
-                        //IL.InsertBefore(startinstruction, IL0);
-                        //IL.InsertAfter(IL0, IL1);
-                        //IL.InsertAfter(IL1, IL2);
+                        var methodclass = method.DeclaringType.DeclaringType;
+                        var hascctor = methodclass.Methods.Any(x => x.Name == ".cctor");
+                        if (!hascctor)
+                        {
+                            methodclass.IsBeforeFieldInit = false;
+                            var cctormethoddef = new MethodDefinition(".cctor",  MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Static , TypeSystem.VoidReference);
+                            cctormethoddef.Body = new MethodBody(cctormethoddef);
+                            cctormethoddef.Body.GetILProcessor().Emit(OpCodes.Ret);
+                            cctormethoddef.Body.Optimize();
+                            methodclass.Methods.Add(cctormethoddef);
+                        }
+                        var cctormethod = methodclass.Methods.Where(x => x.Name == ".cctor").Single();
+                        var cctormethodIL = cctormethod.Body.GetILProcessor();
+                        var cctorretIL = cctormethod.Body.Instructions.Last();
+                        foreach (var imins in imformsinstructions)
+                        {
+                            var methodref = (imins.Operand as MethodReference);
+                            var field = new FieldDefinition("ImFormsCallsiteID_" + methodclass.Name + "__" + method.Name + "__" + imins.Offset, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly, ModuleDefinition.ImportReference(guidtype));
+                            methodclass.Fields.Add(field);
+                            fieldinsdeict.Add(imins, field);
+                            var CCIL0 = cctormethodIL.Create(OpCodes.Call,ModuleDefinition.ImportReference( newguidmethod));
+                            var CCIL1 = cctormethodIL.Create(OpCodes.Stsfld,field);
+                            cctormethodIL.InsertBefore(cctorretIL,CCIL0);
+                            cctormethodIL.InsertAfter(CCIL0,CCIL1);
+                            
+                           
+                        }
+                        cctormethodIL.Body.Optimize();
 
+                    }
+
+                    if (imformsinstructions.Count() > 0)
+                    {
+                       var methodclass = method.DeclaringType.DeclaringType;
+                       foreach (var imins in imformsinstructions)
+                       {
+
+                           var methodref = (imins.Operand as MethodReference);
+                            if (fieldinsdeict.TryGetValue(imins,out var field))
+                            {
+                                var IL0 = IL.Create(OpCodes.Ldsfld, ( field as FieldReference));
+                                var IL1 = IL.Create(OpCodes.Newobj, ModuleDefinition.ImportReference(nullableguidconstructor));
+                                //calledmethods.Add(imins.ToString());
+                                //calledmethods.Add(IL0.ToString());
+                                //calledmethods.Add(IL1.ToString());
+                                IL.InsertBefore(imins,IL0);
+                                IL.InsertBefore(IL0, IL1);
+                                IL.Remove(imins.Previous.Previous.Previous);
+                                IL.Remove(imins.Previous.Previous.Previous);
+                                IL.Remove(imins.Previous.Previous.Previous);
+                                
+                            }
+                            method.Body.Optimize();
+                            method.Body.OptimizeMacros();
+                       }
                     }
                 }
             }
-
-            var allmethodnames = string.Join(",", calledmethods);
+            var allmethodnames = string.Join(" , ", calledmethods);
             var ns = GetNamespace();
             var type = new TypeDefinition(ns, "Hello", TypeAttributes.Public, TypeSystem.ObjectReference);
 
@@ -141,4 +191,7 @@ namespace Weavers
         public override bool ShouldCleanReference => true;
     }
 
+    public class TagAttribute : Attribute
+    {
+    }
 }

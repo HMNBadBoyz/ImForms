@@ -28,6 +28,9 @@ namespace ImFormsUser
                 }
             });
         }
+        public static readonly Guid ImFormsCallsiteID_ImFormsUser_cs_line_95 = Guid.NewGuid();
+        public static readonly Guid ImFormsCallsiteID_ImFormsUser_cs_line_98 = Guid.NewGuid();
+
 
         public async Task Main(Panel panel)
         {
@@ -40,14 +43,13 @@ namespace ImFormsUser
             bool reverseList = false;
             float f = 0;
             string teststr = "";
-            var cacheid = Guid.NewGuid();
             while (true)
             {
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
                 mgr.Space();
                 mgr.Label("ImForms makes it easy to display and modify one value with multiple controls");
                 mgr.Label("x ="+x);
-                mgr.Label("f ="+f,cacheid);
+                mgr.Label("f ="+f);
                 mgr.TreeView(new string[] { "bdfihdf", "dshsdiusdh" });
                 string res = "";
                 if (mgr.ComboBox("text box",ref res,new string[] { "t","f","c" }))
@@ -90,14 +92,13 @@ namespace ImFormsUser
                     foreach (var n in seq) { mgr.Label("[" + n + "]"); }
                 }
 
+                var p = 0;
                 mgr.Space();
                 mgr.Label("Values from other threads can be displayed when a panel refreshes.");
-                Guid ImFormsCallsiteID_ImFormsUser_cs_line_95 = Guid.NewGuid();
-                mgr.LinkLabel("Try it!",ImFormsCallsiteID_ImFormsUser_cs_line_95);
-                //mgr.LinkLabel("Try it!");
-                var p = 0;
-                Guid ImFormsCallsiteID_ImFormsUser_cs_line_98 = Guid.NewGuid();
-                mgr.SliderInt("test it",ref p, 0, 10, ImFormsCallsiteID_ImFormsUser_cs_line_98);
+                mgr.LinkLabel("Try it!");
+                mgr.LinkLabel("Try it!", ImFormsCallsiteID_ImFormsUser_cs_line_95);
+                mgr.SliderInt("test it",ref p, 0, 10);
+                mgr.SliderInt("test it",ref p, 0, 10,ImFormsCallsiteID_ImFormsUser_cs_line_98);
                 mgr.Label("y = " + y); 
 
                 await mgr.NextFrame();
