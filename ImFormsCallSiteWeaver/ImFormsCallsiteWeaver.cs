@@ -64,26 +64,28 @@ namespace Weavers
                         cctormethodIL.Body.Optimize();
 
                     }
-
+                    imformsinstructions = method.Body.Instructions.Where(x => x.OpCode == OpCodes.Callvirt)
+                        .Where(x => imformsclassmethods.Any(y => y.FullName == (x.Operand as MethodReference).FullName));
                     if (imformsinstructions.Count() > 0)
                     {
                        var methodclass = method.DeclaringType.DeclaringType;
-                       foreach (var imins in imformsinstructions)
+                       for(int i =0; i<imformsinstructions.Count();i++)
                        {
-
+                            var imins = method.Body.Instructions.Where(x => x.OpCode == OpCodes.Callvirt)
+                        .Where(x => imformsclassmethods.Any(y => y.FullName == (x.Operand as MethodReference).FullName)).ElementAt(i);
                            var methodref = (imins.Operand as MethodReference);
                             if (fieldinsdeict.TryGetValue(imins,out var field))
                             {
-                                var IL0 = IL.Create(OpCodes.Ldsfld, ( field as FieldReference));
+                                var IL0 = IL.Create(OpCodes.Ldsfld, field );
                                 var IL1 = IL.Create(OpCodes.Newobj, ModuleDefinition.ImportReference(nullableguidconstructor));
-                                //calledmethods.Add(imins.ToString());
+                                calledmethods.Add(imins.Operand.ToString());
                                 //calledmethods.Add(IL0.ToString());
                                 //calledmethods.Add(IL1.ToString());
+                                IL.Remove(imins.Previous);
+                                IL.Remove(imins.Previous);
+                                IL.Remove(imins.Previous);
                                 IL.InsertBefore(imins,IL0);
-                                IL.InsertBefore(IL0, IL1);
-                                IL.Remove(imins.Previous.Previous.Previous);
-                                IL.Remove(imins.Previous.Previous.Previous);
-                                IL.Remove(imins.Previous.Previous.Previous);
+                                IL.InsertBefore(imins, IL1);
                                 
                             }
                             method.Body.Optimize();

@@ -28,10 +28,7 @@ namespace ImFormsUser
                 }
             });
         }
-        public static readonly Guid ImFormsCallsiteID_ImFormsUser_cs_line_95 = Guid.NewGuid();
-        public static readonly Guid ImFormsCallsiteID_ImFormsUser_cs_line_98 = Guid.NewGuid();
-
-
+        
         public async Task Main(Panel panel)
         {
             ImFormsMgr mgr = new ImFormsMgr(panel);
@@ -96,9 +93,8 @@ namespace ImFormsUser
                 mgr.Space();
                 mgr.Label("Values from other threads can be displayed when a panel refreshes.");
                 mgr.LinkLabel("Try it!");
-                mgr.LinkLabel("Try it!", ImFormsCallsiteID_ImFormsUser_cs_line_95);
+                
                 mgr.SliderInt("test it",ref p, 0, 10);
-                mgr.SliderInt("test it",ref p, 0, 10,ImFormsCallsiteID_ImFormsUser_cs_line_98);
                 mgr.Label("y = " + y); 
 
                 await mgr.NextFrame();
