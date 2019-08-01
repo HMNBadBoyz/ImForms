@@ -14,81 +14,37 @@ namespace Weavers
     {
         public override void Execute()
         {
-            var methodref = typeof(Guid?).GetProperty("HasValue").GetMethod;
+            var methodref = typeof(ulong?).GetProperty("HasValue").GetMethod;
             var methodref2 = typeof(Exception).GetConstructor(new Type[] { typeof(string) });
             var classmgrtype = this.ModuleDefinition.GetType("ImForms.ImFormsMgr");
             var classmethods = classmgrtype.GetMethods().Where(x => x.IsPublic && x.HasCustomAttributes && x.CustomAttributes.Any(p => p.AttributeType.Name == "CheckIDAttribute"));
-            foreach (var method in classmethods)
+            
             {
-                method.Body.SimplifyMacros();
-                method.Body.InitLocals = true;
-                method.Body.Variables.Add(new VariableDefinition(ModuleDefinition.ImportReference(typeof(bool))));
-                method.Body.LocalVarToken = method.Body.Variables.Last().VariableType.MetadataToken;
-                var IL = method.Body.GetILProcessor();
-                var firstinstruction = method.Body.Instructions[0];
-                var secondinstruction = method.Body.Instructions[1];
-                var idparamindex = method.Body.Variables.Count - 1;
-                var stloc = OpCodes.Stloc;
-                var ldloc = OpCodes.Ldloc;
-                switch (idparamindex)
+                foreach (var method in classmethods)
                 {
-                    case 0:
-                        stloc = OpCodes.Stloc_0;
-                        ldloc = OpCodes.Ldloc_0;
-                        break;
-                    case 1:
-                        stloc = OpCodes.Stloc_1;
-                        ldloc = OpCodes.Ldloc_1;
-                        break;
-                    case 2:
-                        stloc = OpCodes.Stloc_2;
-                        ldloc = OpCodes.Ldloc_2;
-                        break;
-                    case 3:
-                        stloc = OpCodes.Stloc_3;
-                        ldloc = OpCodes.Ldloc_3;
-                        break;
-                    default:
-                        stloc = OpCodes.Stloc_S;
-                        ldloc = OpCodes.Ldloc_S;
-                        break;
-                }
-                var IL0 = Instruction.Create(OpCodes.Ldarga_S, method.Parameters.Last());
-                var IL1 = Instruction.Create(OpCodes.Call, ModuleDefinition.ImportReference(methodref));
-                var IL2 = Instruction.Create(OpCodes.Ldc_I4_0);
-                var IL3 = Instruction.Create(OpCodes.Ceq);
-                Instruction IL4; 
-                Instruction IL5; 
-                if (idparamindex <= 3)
-                {
-                    IL4 = Instruction.Create(stloc);
-                    IL5 = Instruction.Create(ldloc);
-                }
-                else
-                {
-                    IL4 = Instruction.Create(stloc, method.Body.Variables.Last());
-                    IL5 = Instruction.Create(ldloc, method.Body.Variables.Last());
-                }
+                    method.Body.SimplifyMacros();
+                    method.Body.InitLocals = true;
+                    method.Body.Variables.Add(new VariableDefinition(ModuleDefinition.ImportReference(typeof(bool))));
+                    method.Body.LocalVarToken = method.Body.Variables.Last().VariableType.MetadataToken;
+                    var IL = method.Body.GetILProcessor();
+                    var firstinstruction = method.Body.Instructions[0];
+                    var secondinstruction = method.Body.Instructions[1];
+                    var IL0 = Instruction.Create(OpCodes.Ldarga_S, method.Parameters.Last());
+                    var IL1 = Instruction.Create(OpCodes.Call, ModuleDefinition.ImportReference(methodref));
+                    var IL2 = Instruction.Create(OpCodes.Brfalse_S, secondinstruction);
+                    var IL3 = Instruction.Create(OpCodes.Ldstr, $"Called {method.Name} with { method.Parameters.Last().Name} == null. Is ImForms.Fody correctly configured ?");
+                    var IL4 = Instruction.Create(OpCodes.Newobj, ModuleDefinition.ImportReference(methodref2));
+                    var IL5 = Instruction.Create(OpCodes.Throw);
 
-                var IL6 = Instruction.Create(OpCodes.Brfalse_S, secondinstruction);
-                var IL7 = Instruction.Create(OpCodes.Nop);
-                var IL8 = Instruction.Create(OpCodes.Ldstr, $"Called {method.Name} with { method.Parameters.Last().Name} == null. Is ImForms.Fody correctly configured ?");
-                var IL9 = Instruction.Create(OpCodes.Newobj, ModuleDefinition.ImportReference(methodref2));
-                var IL10 = Instruction.Create(OpCodes.Throw);
-
-                IL.InsertAfter(firstinstruction, IL0);
-                IL.InsertAfter(IL0, IL1);
-                IL.InsertAfter(IL1, IL2);
-                IL.InsertAfter(IL2, IL3);
-                IL.InsertAfter(IL3, IL4);
-                IL.InsertAfter(IL4, IL5);
-                IL.InsertAfter(IL5, IL6);
-                IL.InsertAfter(IL6, IL7);
-                IL.InsertAfter(IL7, IL8);
-                IL.InsertAfter(IL8, IL9);
-                IL.InsertAfter(IL9, IL10);
-                method.Body.OptimizeMacros();
-                method.Body.Optimize();
+                    IL.InsertAfter(firstinstruction, IL0);
+                    IL.InsertAfter(IL0, IL1);
+                    IL.InsertAfter(IL1, IL2);
+                    IL.InsertAfter(IL2, IL3);
+                    IL.InsertAfter(IL3, IL4);
+                    IL.InsertAfter(IL4, IL5);
+                    method.Body.OptimizeMacros();
+                    method.Body.Optimize();
+                }
             }
         }
 
