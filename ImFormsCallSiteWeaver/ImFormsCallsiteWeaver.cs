@@ -52,7 +52,6 @@ namespace Weavers
                             IL.Remove(imins.Previous);
                             IL.InsertBefore(imins, IL0);
                             IL.InsertBefore(imins, IL1);
-
                         }
 
                     }

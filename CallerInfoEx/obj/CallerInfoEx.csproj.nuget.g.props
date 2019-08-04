@@ -13,6 +13,6 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)fodyhelpers\5.1.1\build\FodyHelpers.props" Condition="Exists('$(NuGetPackageRoot)fodyhelpers\5.1.1\build\FodyHelpers.props')" />
+    <Import Project="$(NuGetPackageRoot)fodypackaging\5.1.1\build\FodyPackaging.props" Condition="Exists('$(NuGetPackageRoot)fodypackaging\5.1.1\build\FodyPackaging.props')" />
   </ImportGroup>
 </Project>

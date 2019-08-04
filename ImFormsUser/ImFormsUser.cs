@@ -7,12 +7,16 @@ using System.Linq;
 
 namespace ImFormsUser
 {
+    public class GenIDAttribute : Attribute
+    {
+
+    }
+
     public partial class ImFormsUser : Form
     {
         public int y = 0;
         public int t = 0;
         ImFormsMgr rightPanelMgr;
-
         public ImFormsUser()
         {
             InitializeComponent();
@@ -34,7 +38,6 @@ namespace ImFormsUser
             ImFormsMgr mgr = new ImFormsMgr(panel);
             
             IList<int> list = new List<int> { 1, 2, 3 };
-            
             int x = 0;
             bool displayList = false;
             bool reverseList = false;
@@ -86,7 +89,7 @@ namespace ImFormsUser
 
                     mgr.Checkbox("Display reversed", ref reverseList);
 
-                    foreach (var n in seq) { mgr.Label("[" + n + "]"); }
+                   // foreach (var n in seq) { mgr.Label("[" + n + "]"); }
                 }
 
                 var p = 0;
@@ -95,7 +98,7 @@ namespace ImFormsUser
                 mgr.LinkLabel("Try it!");
                 
                 mgr.SliderInt("test it",ref p, 0, 10);
-                //mgr.SliderInt("test it",ref p, 0, 10,ImFormsCallsiteID_435);
+                
                 mgr.Label("y = " + y); 
 
                 await mgr.NextFrame();

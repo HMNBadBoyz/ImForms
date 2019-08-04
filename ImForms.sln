@@ -18,6 +18,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImFormsWeaver", "Weavers\Im
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImFormsCallSiteWeaver", "ImFormsCallSiteWeaver\ImFormsCallSiteWeaver.csproj", "{59457748-D30A-4677-82E9-8620712726E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallerInfoEx.Fody", "CallerInfoEx.Fody\CallerInfoEx.Fody.csproj", "{DF80719E-0EB6-4160-8BC0-91E19FA6A6E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallerInfoEx", "CallerInfoEx\CallerInfoEx.csproj", "{891E75D1-D70A-44D4-956E-1A1305AD1C44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,14 @@ Global
 		{59457748-D30A-4677-82E9-8620712726E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59457748-D30A-4677-82E9-8620712726E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59457748-D30A-4677-82E9-8620712726E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF80719E-0EB6-4160-8BC0-91E19FA6A6E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF80719E-0EB6-4160-8BC0-91E19FA6A6E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF80719E-0EB6-4160-8BC0-91E19FA6A6E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF80719E-0EB6-4160-8BC0-91E19FA6A6E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{891E75D1-D70A-44D4-956E-1A1305AD1C44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{891E75D1-D70A-44D4-956E-1A1305AD1C44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{891E75D1-D70A-44D4-956E-1A1305AD1C44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{891E75D1-D70A-44D4-956E-1A1305AD1C44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

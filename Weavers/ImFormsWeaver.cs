@@ -31,7 +31,7 @@ namespace Weavers
                     var secondinstruction = method.Body.Instructions[1];
                     var IL0 = Instruction.Create(OpCodes.Ldarga_S, method.Parameters.Last());
                     var IL1 = Instruction.Create(OpCodes.Call, ModuleDefinition.ImportReference(methodref));
-                    var IL2 = Instruction.Create(OpCodes.Brfalse_S, secondinstruction);
+                    var IL2 = Instruction.Create(OpCodes.Brtrue_S, secondinstruction);
                     var IL3 = Instruction.Create(OpCodes.Ldstr, $"Called {method.Name} with { method.Parameters.Last().Name} == null. Is ImForms.Fody correctly configured ?");
                     var IL4 = Instruction.Create(OpCodes.Newobj, ModuleDefinition.ImportReference(methodref2));
                     var IL5 = Instruction.Create(OpCodes.Throw);

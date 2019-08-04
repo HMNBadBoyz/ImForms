@@ -46,9 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImFormsUser.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="ImFormsUser.cs" />
     <Compile Include="ImFormsUser.Designer.cs">
       <DependentUpon>ImFormsUser.cs</DependentUpon>
     </Compile>
@@ -83,11 +81,16 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CallerInfoEx\CallerInfoEx.csproj">
+      <Project>{891e75d1-d70a-44d4-956e-1a1305ad1c44}</Project>
+      <Name>CallerInfoEx</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ImForms\ImForms.csproj">
       <Project>{61fe935c-691f-4f58-b320-0ba562b9fc97}</Project>
       <Name>ImForms</Name>
     </ProjectReference>
     <WeaverFiles Include="$(SolutionDir)ImFormsCallSiteWeaver\bin\$(Configuration)\ImFormsCallSiteWeaver.dll" WeaverClassNames="ImFormsCallSiteWeaver" />
+    <WeaverFiles Include="$(SolutionDir)CallerInfoEx.Fody\bin\$(Configuration)\CallerInfoEx.Fody.dll" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />

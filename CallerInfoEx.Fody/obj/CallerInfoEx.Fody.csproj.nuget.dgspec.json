@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\shazan\\ImForms\\CallerInfoEx.Fody\\CallerInfoEx.Fody.csproj": {}
+  },
+  "projects": {
+    "E:\\shazan\\ImForms\\CallerInfoEx.Fody\\CallerInfoEx.Fody.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\shazan\\ImForms\\CallerInfoEx.Fody\\CallerInfoEx.Fody.csproj",
+        "projectName": "CallerInfoEx.Fody",
+        "projectPath": "E:\\shazan\\ImForms\\CallerInfoEx.Fody\\CallerInfoEx.Fody.csproj",
+        "packagesPath": "C:\\Users\\Shaz\\.nuget\\packages\\",
+        "outputPath": "E:\\shazan\\ImForms\\CallerInfoEx.Fody\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Shaz\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://packages.xenko.com/nuget": {}
+        },
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "dependencies": {
+            "FodyHelpers": {
+              "target": "Package",
+              "version": "[5.1.1, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}
