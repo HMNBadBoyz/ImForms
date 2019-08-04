@@ -168,6 +168,11 @@
         "net472": {
           "projectReferences": {}
         }
+      },
+      "warningProperties": {
+        "noWarn": [
+          "NU5118"
+        ]
       }
     },
     "frameworks": {

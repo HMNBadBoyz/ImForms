@@ -14,6 +14,7 @@ namespace Weavers
     {
         public override void Execute()
         {
+            /*
             var rngset = new HashSet<long>();
             var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
             var bytes = new byte[64];
@@ -21,7 +22,7 @@ namespace Weavers
             var allmethods = this.ModuleDefinition.GetAllTypes().SelectMany(x => x.Methods.AsEnumerable()).Where(x => x.HasBody);
             var imformsclassmethods = typeof(ImFormsMgr).GetMethods().Where(x => x.IsPublic && x.CustomAttributes.Any(p => p.AttributeType.Name == "CheckIDAttribute")).Select(x => ModuleDefinition.ImportReference(x));
             var calledmethods = new List<string>();
-            if (allmethods.Count() > 0 )
+            if (allmethods.Count() > 0 && false)
             {
                 foreach (var method in allmethods)
                 {
@@ -59,7 +60,7 @@ namespace Weavers
                     method.Body.OptimizeMacros();
                 }
             }
-
+            */
         }
 
 
