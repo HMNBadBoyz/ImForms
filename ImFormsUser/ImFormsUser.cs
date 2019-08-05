@@ -66,11 +66,12 @@ namespace ImFormsUser
                 int valueToAssignX = (x == 1) ? 0 : 1;
                 if (mgr.Button("x <- " + valueToAssignX))
                 {
-                    x = (x == 1) ? 0 : 1;
+                    x = valueToAssignX;
                 }
 
                 bool xIs1 = (x == 1);
                 mgr.Checkbox("X == 1", ref xIs1);
+                x = xIs1 ? 1 : 0;
                 mgr.Checkbox("Checkbox :" + checkbox, ref checkbox);
 
                 mgr.Space();
@@ -141,6 +142,7 @@ namespace ImFormsUser
         private void refreshBtn_Click(object sender, System.EventArgs e)
         {
             rightPanelMgr.Refresh();
+            
         }
     }
 }

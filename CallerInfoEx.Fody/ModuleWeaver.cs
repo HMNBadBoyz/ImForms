@@ -22,6 +22,7 @@ namespace CallerInfoEx.Fody
             var allinstructions = allmethods.ToDictionary( t=> t, X => X.Body.Instructions.Where(x => x.OpCode == OpCodes.Callvirt && (x.Operand as MethodReference).Resolve().HasParameters).Where(x => (x.Operand as MethodReference).Resolve().Parameters.Last().HasCustomAttributes).Where(x => (x.Operand as MethodReference).Resolve().Parameters.Last().CustomAttributes.Any(p => p.AttributeType.Name == "GenIDAttribute")).Reverse()) ;
             var calledmethods = new List<string>();
             calledmethods.AddRange(allinstructions.SelectMany(x=>x.Value).Select(x => (x.Operand as MethodReference).Resolve().ToString()));
+            /*
             var file = System.IO.File.CreateText("test.txt");
             foreach (var item in calledmethods)
             {
@@ -29,6 +30,7 @@ namespace CallerInfoEx.Fody
             }
             file.Flush();
             file.Close();
+            */
             foreach (var methodinstructions in allinstructions)
             {
                 var method = methodinstructions.Key;
@@ -50,6 +52,10 @@ namespace CallerInfoEx.Fody
                         var IL0 = IL.Create(OpCodes.Ldc_I8, randomnumber);
                         var IL1 = IL.Create(OpCodes.Newobj, ModuleDefinition.ImportReference(nullableulongconstructor));
                         calledmethods.Add(instruction.Operand.ToString());
+                        if(method.Body.Variables.Contains(instruction.Previous.Operand as VariableReference))
+                        {
+                            method.Body.Variables.Remove((instruction.Previous.Operand as VariableReference).Resolve());
+                        }
                         IL.Remove(instruction.Previous);
                         IL.Remove(instruction.Previous);
                         IL.Remove(instruction.Previous);

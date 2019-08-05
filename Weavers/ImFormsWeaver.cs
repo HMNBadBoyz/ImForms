@@ -35,7 +35,6 @@ namespace Weavers
                     var IL3 = Instruction.Create(OpCodes.Ldstr, $"Called {method.Name} with { method.Parameters.Last().Name} == null. Is ImForms.Fody correctly configured ?");
                     var IL4 = Instruction.Create(OpCodes.Newobj, ModuleDefinition.ImportReference(methodref2));
                     var IL5 = Instruction.Create(OpCodes.Throw);
-
                     IL.InsertAfter(firstinstruction, IL0);
                     IL.InsertAfter(IL0, IL1);
                     IL.InsertAfter(IL1, IL2);

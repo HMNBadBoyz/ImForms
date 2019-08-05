@@ -164,9 +164,10 @@ namespace ImForms
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.CheckBox>);
             var checkBox = ctrl.WfControl as WForms.CheckBox;
             checkBox.Text = text;
+            checkBox.AutoCheck = false;
             var wasInteracted = InteractedElementId == ctrl.ID;
 
-            if (wasInteracted) { checkBoxChecked = !checkBoxChecked;  }
+            if (wasInteracted) { checkBox.Checked = ! checkBox.Checked; checkBoxChecked = checkBox.Checked;  }
             else { checkBox.Checked = checkBoxChecked; }
 
             return wasInteracted;
@@ -179,12 +180,13 @@ namespace ImForms
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.RadioButton>);
             var radioButton = ctrl.WfControl as WForms.RadioButton;
             radioButton.Text = text;
+            radioButton.AutoCheck = false;
             var wasInteracted = InteractedElementId == ctrl.ID ;
 
             if (wasInteracted) { value = checkAgainst; }
             else { radioButton.Checked = (value == checkAgainst); }
 
-            return wasInteracted && InteractedElementId.HasValue;
+            return wasInteracted ;
         }
 
 
