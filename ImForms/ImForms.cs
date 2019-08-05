@@ -105,6 +105,7 @@ namespace ImForms
             if (!ImControls.TryGetValue(id, out ctrl))
             {
                 ctrl = new ImControl(maker(id));
+                ctrl.ID = id;
                 ImControls.Add(id, ctrl);
             }
             
@@ -165,7 +166,7 @@ namespace ImForms
             checkBox.Text = text;
             var wasInteracted = InteractedElementId == ctrl.ID;
 
-            if (wasInteracted) { checkBoxChecked = checkBox.Checked; }
+            if (wasInteracted) { checkBoxChecked = !checkBoxChecked;  }
             else { checkBox.Checked = checkBoxChecked; }
 
             return wasInteracted;
@@ -178,12 +179,12 @@ namespace ImForms
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.RadioButton>);
             var radioButton = ctrl.WfControl as WForms.RadioButton;
             radioButton.Text = text;
-            var wasInteracted = InteractedElementId == ctrl.ID;
+            var wasInteracted = InteractedElementId == ctrl.ID ;
 
             if (wasInteracted) { value = checkAgainst; }
             else { radioButton.Checked = (value == checkAgainst); }
 
-            return wasInteracted;
+            return wasInteracted && InteractedElementId.HasValue;
         }
 
 
@@ -253,7 +254,7 @@ namespace ImForms
         {
             var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.TextBox>);
             var trackbar = ctrl.WfControl as WForms.TextBox;
-            trackbar.Name = text;
+            trackbar.Text = text;
             trackbar.Multiline = false;
             output = trackbar.Text;
             var wasInteracted = InteractedElementId == ctrl.ID;
@@ -269,12 +270,12 @@ namespace ImForms
             var textbox = ctrl.WfControl as WForms.TextBox;
             if (FirstPass)
             {
-                textbox.Name = text;
+                textbox.Text = text;
                 textbox.WordWrap = false;
                 textbox.Multiline = true;
                 textbox.ScrollBars = WForms.ScrollBars.Both;
                 textbox.Size = new System.Drawing.Size(textbox.Size.Width, textbox.Size.Height * 3);
-                textbox.TextChanged += (o,e)=> {
+                textbox.TextChanged += (o,e) => {
                     textbox.SelectionStart = textbox.Text.Length;
                     textbox.ScrollToCaret();
                 };
@@ -291,7 +292,7 @@ namespace ImForms
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id,ClickCtrlMaker<WForms.TreeView>);
             var trackbar = ctrl.WfControl as WForms.TreeView;
-            trackbar.Name = texts[0];
+            trackbar.Text = texts[0];
             if (FirstPass)
             {
                 foreach (var text in texts)

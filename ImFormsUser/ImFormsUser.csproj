@@ -89,7 +89,6 @@
       <Project>{61fe935c-691f-4f58-b320-0ba562b9fc97}</Project>
       <Name>ImForms</Name>
     </ProjectReference>
-    <WeaverFiles Include="$(SolutionDir)ImFormsCallSiteWeaver\bin\$(Configuration)\ImFormsCallSiteWeaver.dll" WeaverClassNames="ImFormsCallSiteWeaver" />
     <WeaverFiles Include="$(SolutionDir)CallerInfoEx.Fody\bin\$(Configuration)\CallerInfoEx.Fody.dll" />
   </ItemGroup>
   <ItemGroup>
