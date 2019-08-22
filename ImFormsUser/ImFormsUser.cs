@@ -38,7 +38,7 @@ namespace ImFormsUser
             int x = 0;
             ImFormsMgr mgr = new ImFormsMgr(panel);
             
-            IList<int> list = new List<int> { 1, 2, 3 };
+            IList<int> list = new List<int> {  };
             bool displayList = false;
             bool reverseList = false;
             float f = 0;

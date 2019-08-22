@@ -289,7 +289,7 @@ namespace ImForms
 
 
         [CheckID]
-        public bool TreeView(string[] texts, [GenID] ulong? id = null)
+        public bool TreeView(IList<string> texts, ref int selectedIndex, [GenID] ulong? id = null)
         {
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id,ClickCtrlMaker<WForms.TreeView>);
@@ -303,8 +303,31 @@ namespace ImForms
                 }
             }
             var wasInteracted = InteractedElementId == ctrl.ID;
+            if (wasInteracted)
+            {
+                selectedIndex = trackbar.Nodes.IndexOf(trackbar.SelectedNode);
+            }
             return wasInteracted;
         }
+
+        [CheckID]
+        public bool TreeView(IList<string> texts,  [GenID] ulong? id = null)
+        {
+            bool FirstPass = !ControlExists(id);
+            var ctrl = ProcureControl(id, ClickCtrlMaker<WForms.TreeView>);
+            var trackbar = ctrl.WfControl as WForms.TreeView;
+            trackbar.Text = texts[0];
+            if (FirstPass)
+            {
+                foreach (var text in texts)
+                {
+                    trackbar.Nodes.Add(id.ToString(), text);
+                }
+            }
+            var wasInteracted = InteractedElementId == ctrl.ID;
+            return wasInteracted;
+        }
+
 
 
         [CheckID]
