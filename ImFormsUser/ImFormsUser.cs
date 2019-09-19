@@ -1,22 +1,14 @@
 ﻿using System.Windows.Forms;
 using ImForms;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 
 namespace ImFormsUser
 {
-    public class GenIDAttribute : Attribute
-    {
-
-    }
 
     public partial class ImFormsUser : Form
     {
-        public int y = 0;
-        public int t = 0;
-        ImFormsMgr rightPanelMgr;
         public ImFormsUser()
         {
             InitializeComponent();
@@ -144,5 +136,10 @@ namespace ImFormsUser
             rightPanelMgr.Refresh();
             
         }
+        public int y = 0;
+        public int t = 0;
+        ImFormsMgr rightPanelMgr;
+
     }
+
 }

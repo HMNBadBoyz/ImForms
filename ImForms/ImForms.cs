@@ -63,6 +63,7 @@ namespace ImForms
         public WFControlList DisplayedControls;
         private int CurrentSortKey;
         private ulong? InteractedElementId;
+        private ImControl LastCalledControl;
 
         // OH NOTE This could be configurable by the user in the _distant_ future
         private  int RedrawsPerInteraction = 1;
@@ -108,7 +109,7 @@ namespace ImForms
                 ctrl.ID = id;
                 ImControls.Add(id, ctrl);
             }
-            
+            LastCalledControl = ctrl;
             ctrl.State = ImDraw.Drawn;
             ctrl.SortKey = CurrentSortKey;
             ctrl.WfControl.Visible = true;
@@ -126,6 +127,8 @@ namespace ImForms
             wfCtrl.AutoSize = true;
             return wfCtrl;
         }
+
+        public ImControl GetLastCalledControl() => LastCalledControl;
 
         [CheckID]
         public void Space([GenID] ulong? id = null)
@@ -225,19 +228,21 @@ namespace ImForms
 
 
         [CheckID]
-        public void ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, [GenID] ulong? id = null)
+        public bool ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, [GenID] ulong? id = null)
         {
             var ctrl = ProcureControl(id , x => InitControlForClicking(new WForms.ProgressBar(), x));
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
             trackbar.Text = text;
             trackbar.Minimum = minval;
             trackbar.Maximum = maxval;
-            trackbar.Value = value; 
+            trackbar.Value = value;
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            return wasInteracted;
         }
 
 
         [CheckID]
-        public void ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, [GenID] ulong? id = null)
+        public bool ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, [GenID] ulong? id = null)
         {
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ProgressBar(), x));
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
@@ -246,6 +251,8 @@ namespace ImForms
             trackbar.Minimum = (int)(minval * unitscale);
             trackbar.Maximum = (int)(maxval * unitscale);
             trackbar.Value = (int)(value * unitscale);
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            return wasInteracted;
         }
 
 
@@ -253,10 +260,10 @@ namespace ImForms
         public bool InputText(string text,ref string output, [GenID] ulong? id = null)
         {
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TextBox(), x));
-            var trackbar = ctrl.WfControl as WForms.TextBox;
-            trackbar.Text = text;
-            trackbar.Multiline = false;
-            output = trackbar.Text;
+            var textbox = ctrl.WfControl as WForms.TextBox;
+            textbox.Text = text;
+            textbox.Multiline = false;
+            output = textbox.Text;
             var wasInteracted = InteractedElementId == ctrl.ID;
             return wasInteracted;
         }
@@ -267,20 +274,20 @@ namespace ImForms
         {
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TextBox(), x));
-            var textbox = ctrl.WfControl as WForms.TextBox;
+            var multilinetextbox = ctrl.WfControl as WForms.TextBox;
             if (FirstPass)
             {
-                textbox.Text = text;
-                textbox.WordWrap = false;
-                textbox.Multiline = true;
-                textbox.ScrollBars = WForms.ScrollBars.Both;
-                textbox.Size = new System.Drawing.Size(textbox.Size.Width, textbox.Size.Height * 3);
-                textbox.TextChanged += (o,e) => {
-                    textbox.SelectionStart = textbox.Text.Length;
-                    textbox.ScrollToCaret();
+                multilinetextbox.Text = text;
+                multilinetextbox.WordWrap = false;
+                multilinetextbox.Multiline = true;
+                multilinetextbox.ScrollBars = WForms.ScrollBars.Both;
+                multilinetextbox.Size = new System.Drawing.Size(multilinetextbox.Size.Width, multilinetextbox.Size.Height * 3);
+                multilinetextbox.TextChanged += (o,e) => {
+                    multilinetextbox.SelectionStart = multilinetextbox.Text.Length;
+                    multilinetextbox.ScrollToCaret();
                 };
             }
-            output = textbox.Text;
+            output = multilinetextbox.Text;
             var wasInteracted = InteractedElementId == ctrl.ID;
             return wasInteracted;
         }
@@ -291,19 +298,19 @@ namespace ImForms
         {
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TreeView(), x));
-            var trackbar = ctrl.WfControl as WForms.TreeView;
-            trackbar.Text = texts[0];
+            var treeview = ctrl.WfControl as WForms.TreeView;
+            treeview.Text = texts[0];
             if (FirstPass)
             {
                 foreach (var text in texts)
                 {
-                    trackbar.Nodes.Add(id.ToString(), text);
+                    treeview.Nodes.Add(id.ToString(), text);
                 }
             }
             var wasInteracted = InteractedElementId == ctrl.ID;
             if (wasInteracted)
             {
-                selectedIndex = trackbar.Nodes.IndexOf(trackbar.SelectedNode);
+                selectedIndex = treeview.Nodes.IndexOf(treeview.SelectedNode);
             }
             return wasInteracted;
         }
@@ -313,13 +320,13 @@ namespace ImForms
         {
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TreeView(), x));
-            var trackbar = ctrl.WfControl as WForms.TreeView;
-            trackbar.Text = texts[0];
+            var treeview = ctrl.WfControl as WForms.TreeView;
+            treeview.Text = texts[0];
             if (FirstPass)
             {
                 foreach (var text in texts)
                 {
-                    trackbar.Nodes.Add(id.ToString(), text);
+                    treeview.Nodes.Add(id.ToString(), text);
                 }
             }
             var wasInteracted = InteractedElementId == ctrl.ID;
@@ -333,16 +340,16 @@ namespace ImForms
         {
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ComboBox(), x));
-            var trackbar = ctrl.WfControl as WForms.ComboBox;
-            trackbar.Text = text;
+            var combobox = ctrl.WfControl as WForms.ComboBox;
+            combobox.Text = text;
             if (FirstPass) {
-                trackbar.SelectedIndexChanged += LetImGuiHandleIt;
-                trackbar.Click -= LetImGuiHandleIt;
-                trackbar.Items.AddRange(items);
-                trackbar.DropDownStyle = WForms.ComboBoxStyle.DropDownList;
+                combobox.SelectedIndexChanged += LetImGuiHandleIt;
+                combobox.Click -= LetImGuiHandleIt;
+                combobox.Items.AddRange(items);
+                combobox.DropDownStyle = WForms.ComboBoxStyle.DropDownList;
             }
             var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
-            selecteditem = trackbar.SelectedItem as string;
+            selecteditem = combobox.SelectedItem as string;
             selecteditem = selecteditem == null ? "" : selecteditem;
             return wasInteracted;
         }
@@ -354,29 +361,73 @@ namespace ImForms
         {
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ListBox(), x));
-            var trackbar = ctrl.WfControl as WForms.ListBox;
-            trackbar.Text = text;
+            var listbox = ctrl.WfControl as WForms.ListBox;
+            listbox.Text = text;
             if (FirstPass)
             {
-                trackbar.Click -= LetImGuiHandleIt;
-                trackbar.SelectedValueChanged += LetImGuiHandleIt;
-                trackbar.Items.AddRange(items);
+                listbox.Click -= LetImGuiHandleIt;
+                listbox.SelectedValueChanged += LetImGuiHandleIt;
+                listbox.Items.AddRange(items);
             }
             var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
-            selecteditem = trackbar.SelectedItem as string;
+            selecteditem = listbox.SelectedItem as string;
             selecteditem = selecteditem == null ? "" : selecteditem;
             return wasInteracted;
         }
 
 
         [CheckID]
-        public bool CheckedListBox(string text, ref bool checkBoxChecked, [GenID] ulong? id = null)
+        public bool CheckedListBox(string text, ref string selecteditem, string[] items, [GenID] ulong? id = null)
         {
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.CheckedListBox(), x));
             var checkedlistbox = ctrl.WfControl as WForms.CheckedListBox;
-            return false;
+            checkedlistbox.Text = text;
+            if (FirstPass)
+            {
+                checkedlistbox.Click -= LetImGuiHandleIt;
+                checkedlistbox.SelectedValueChanged += LetImGuiHandleIt;
+                checkedlistbox.Items.AddRange(items);
+            }
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            selecteditem = checkedlistbox.SelectedItem as string;
+            selecteditem = selecteditem == null ? "" : selecteditem;
+            return wasInteracted;
         }
-        
+
+        [CheckID]
+        public bool Spinner(string text, ref int value, [GenID] ulong? id = null)
+        {
+            var ctrl = ProcureControl(id, id1 => new WForms.NumericUpDown { Name = id1?.ToString(), AutoSize = true });
+            var spinner = ctrl.WfControl as WForms.NumericUpDown;
+            spinner.Text = text;
+            spinner.Value = value;
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            return wasInteracted;
+        }
+
+        [CheckID]
+        public bool Image(string text,System.Drawing.Image image , [GenID] ulong? id = null)
+        {
+            var ctrl = ProcureControl(id, id1 => new WForms.PictureBox { Name = id1?.ToString(), AutoSize = true });
+            var picturebox = ctrl.WfControl as WForms.PictureBox;
+            picturebox.Text = text;
+            picturebox.Image = image;
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            return wasInteracted;
+        }
+
+        [CheckID]
+        public bool DateTime(string text,  ref DateTime value, [GenID] ulong? id = null)
+        {
+            var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = id1?.ToString(), AutoSize = true });
+            var spinner = ctrl.WfControl as WForms.DateTimePicker;
+            spinner.Text = text;
+            spinner.Value = value;
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            return wasInteracted;
+        }
+
         public void Refresh()
         {
             if (!TCS.Task.IsCompleted)
