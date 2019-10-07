@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
@@ -23,7 +23,9 @@
     <Reference Include="System.Windows.Forms" />
     <WeaverFiles Include="$(SolutionDir)Weavers\bin\$(Configuration)\Weavers.dll" WeaverClassNames="ImFormsWeaver" />
   </ItemGroup>
-
+  <PropertyGroup>
+    <DisableFody>true</DisableFody>
+  </PropertyGroup>
   
 
 </Project>

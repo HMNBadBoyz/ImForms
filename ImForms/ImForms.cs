@@ -50,7 +50,7 @@ namespace ImForms
     {
         [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
         private static extern IntPtr SendMessage(Interop.HandleRef hWnd, Int32 Msg, IntPtr wParam, IntPtr lParam);
-
+        public string GetOwnFunctionName([CmplTime.CallerMemberName]string s) => s;
         private static void EnableRepaint(Interop.HandleRef handle, bool enable)
         {
             const int WM_SETREDRAW = 0x000B;
