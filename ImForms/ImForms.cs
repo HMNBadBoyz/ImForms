@@ -41,7 +41,7 @@ namespace ImForms
         public readonly WForms.Control WfControl;
         public ImDraw State { get; set; }
         public int SortKey { get; set; }
-        public ulong? ID { get; set; }
+        public long? ID { get; set; }
 
         public ImControl(WForms.Control control) { WfControl = control; }
     }
@@ -50,7 +50,13 @@ namespace ImForms
     {
         [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
         private static extern IntPtr SendMessage(Interop.HandleRef hWnd, Int32 Msg, IntPtr wParam, IntPtr lParam);
-        public string GetOwnFunctionName([CmplTime.CallerMemberName]string s) => s;
+        public string GetOwnFunctionName([CmplTime.CallerMemberName]string s="") => s;
+
+        public long? Hash(string a ,int b, string c)
+        {
+            return new { a, b, c }.GetHashCode();
+        }
+
         private static void EnableRepaint(Interop.HandleRef handle, bool enable)
         {
             const int WM_SETREDRAW = 0x000B;
@@ -59,21 +65,21 @@ namespace ImForms
         
         private int RemainingRedraws = 0;
         private TaskCompletionSource<bool> TCS;
-        private Dictionary<ulong?, ImControl> ImControls;
+        private Dictionary<long?, ImControl> ImControls;
         public WFControlList DisplayedControls;
         private int CurrentSortKey;
-        private ulong? InteractedElementId;
+        private long? InteractedElementId;
         private ImControl LastCalledControl;
 
         // OH NOTE This could be configurable by the user in the _distant_ future
         private  int RedrawsPerInteraction = 1;
 
-        private ulong? PrevInteractedElementId;
+        private long? PrevInteractedElementId;
 
         public ImFormsMgr(WForms.Panel panel)
         {
             InteractedElementId = null;
-            ImControls = new Dictionary<ulong?, ImControl>();
+            ImControls = new Dictionary<long?, ImControl>();
             TCS = new TaskCompletionSource<bool>();
             CurrentSortKey = 0;
             DisplayedControls = panel.Controls;
@@ -85,22 +91,22 @@ namespace ImForms
         {
             if (sender is WForms.TreeNode)
             {
-                InteractedElementId = ulong.Parse(((WForms.TreeNode)sender).ImageKey);
+                InteractedElementId = long.Parse(((WForms.TreeNode)sender).ImageKey);
             }
             else
             {
-                InteractedElementId = ulong.Parse(((WForms.Control)sender).Name);
+                InteractedElementId = long.Parse(((WForms.Control)sender).Name);
             }
             QueueRedraws(RedrawsPerInteraction);
             Refresh();
         }
 
-        public bool ControlExists(ulong? id)
+        public bool ControlExists(long? id)
         {
             return ImControls.ContainsKey(id);
         }
 
-        public ImControl ProcureControl(ulong? id, ImFormsCtrlMaker maker )
+        public ImControl ProcureControl(long? id, ImFormsCtrlMaker maker )
         {
             ImControl ctrl;
             if (!ImControls.TryGetValue(id, out ctrl))
@@ -117,9 +123,9 @@ namespace ImForms
             return ctrl;
         }
 
-        public delegate WForms.Control ImFormsCtrlMaker(ulong? id);
+        public delegate WForms.Control ImFormsCtrlMaker(long? id);
 
-        public WForms.Control InitControlForClicking(WForms.Control wfCtrl, ulong? id)
+        public WForms.Control InitControlForClicking(WForms.Control wfCtrl, long? id)
         {
             wfCtrl.Name = id?.ToString();
             wfCtrl.Click += LetImGuiHandleIt;
@@ -130,38 +136,42 @@ namespace ImForms
 
         public ImControl GetLastCalledControl() => LastCalledControl;
 
-        [CheckID]
-        public void Space([GenID] ulong? id = null)
+        
+        public void Space([CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            Label("",id);
+            Label("", callerfilepath, callerlinenumber, callermembername);
         }
-        [CheckID]
-        public void Label(string text, [GenID] ulong? id = null)
+        
+        public void Label(string text,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            var ctrl = ProcureControl(id , id1 => new WForms.Label { Name = id1?.ToString(), AutoSize = true });
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
+            var ctrl = ProcureControl(id, id1 => new WForms.Label { Name = id1?.ToString(), AutoSize = true });
             ctrl.WfControl.Text = text;
         }
 
-        [CheckID]
-        public bool Button(string text, [GenID] ulong? id = null)
+        
+        public bool Button(string text,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id,x => InitControlForClicking(new WForms.Button(),x));
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
-        [CheckID]
-        public bool LinkLabel(string text, [GenID] ulong? id = null)
+        
+        public bool LinkLabel(string text,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.LinkLabel(), x));
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
 
-        [CheckID]
-        public bool Checkbox(string text, ref bool checkBoxChecked, [GenID] ulong? id = null)
+        
+        public bool Checkbox(string text, ref bool checkBoxChecked,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.CheckBox(), x));
             var checkBox = ctrl.WfControl as WForms.CheckBox;
             checkBox.Text = text;
@@ -175,9 +185,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool RadioButton(string text, ref int value, int checkAgainst, [GenID] ulong? id = null)
+        
+        public bool RadioButton(string text, ref int value, int checkAgainst,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.RadioButton(), x));
             var radioButton = ctrl.WfControl as WForms.RadioButton;
             radioButton.Text = text;
@@ -191,9 +202,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, [GenID] ulong? id = null)
+        
+        public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TrackBar(), x));
             var trackbar = ctrl.WfControl as WForms.TrackBar;
@@ -208,9 +220,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, [GenID] ulong? id = null)
+        
+        public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id , x => InitControlForClicking(new WForms.TrackBar(), x));
             var trackbar = ctrl.WfControl as WForms.TrackBar;
@@ -227,9 +240,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool ProgressInt(string text, ref int value, int minval = 0, int maxval = 1, [GenID] ulong? id = null)
+        
+        public bool ProgressInt(string text, ref int value, int minval = 0, int maxval = 1,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id , x => InitControlForClicking(new WForms.ProgressBar(), x));
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
             trackbar.Text = text;
@@ -241,9 +255,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f, [GenID] ulong? id = null)
+        
+        public bool ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ProgressBar(), x));
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
             trackbar.Text = text;
@@ -256,9 +271,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool InputText(string text,ref string output, [GenID] ulong? id = null)
+        
+        public bool InputText(string text,ref string output,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TextBox(), x));
             var textbox = ctrl.WfControl as WForms.TextBox;
             textbox.Text = text;
@@ -269,9 +285,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool InputMultilineText(string text, ref string output, [GenID] ulong? id = null)
+        
+        public bool InputMultilineText(string text, ref string output,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TextBox(), x));
             var multilinetextbox = ctrl.WfControl as WForms.TextBox;
@@ -293,9 +310,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool TreeView(IList<string> texts, ref int selectedIndex, [GenID] ulong? id = null)
+        
+        public bool TreeView(IList<string> texts, ref int selectedIndex,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TreeView(), x));
             var treeview = ctrl.WfControl as WForms.TreeView;
@@ -315,9 +333,10 @@ namespace ImForms
             return wasInteracted;
         }
 
-        [CheckID]
-        public bool TreeView(IList<string> texts,  [GenID] ulong? id = null)
+        
+        public bool TreeView(IList<string> texts,   [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TreeView(), x));
             var treeview = ctrl.WfControl as WForms.TreeView;
@@ -335,9 +354,10 @@ namespace ImForms
 
 
 
-        [CheckID]
-        public bool ComboBox(string text,ref string selecteditem ,string[] items , [GenID] ulong? id = null)
+        
+        public bool ComboBox(string text,ref string selecteditem ,string[] items ,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ComboBox(), x));
             var combobox = ctrl.WfControl as WForms.ComboBox;
@@ -356,9 +376,10 @@ namespace ImForms
 
 
 
-        [CheckID]
-        public bool ListBox(string text, ref string selecteditem,string[] items, [GenID] ulong? id = null)
+        
+        public bool ListBox(string text, ref string selecteditem,string[] items,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ListBox(), x));
             var listbox = ctrl.WfControl as WForms.ListBox;
@@ -376,9 +397,10 @@ namespace ImForms
         }
 
 
-        [CheckID]
-        public bool CheckedListBox(string text, ref string selecteditem, string[] items, [GenID] ulong? id = null)
+        
+        public bool CheckedListBox(string text, ref string selecteditem, string[] items,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.CheckedListBox(), x));
             var checkedlistbox = ctrl.WfControl as WForms.CheckedListBox;
@@ -395,9 +417,10 @@ namespace ImForms
             return wasInteracted;
         }
 
-        [CheckID]
-        public bool Spinner(string text, ref int value, [GenID] ulong? id = null)
+        
+        public bool Spinner(string text, ref int value,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id, id1 => new WForms.NumericUpDown { Name = id1?.ToString(), AutoSize = true });
             var spinner = ctrl.WfControl as WForms.NumericUpDown;
             spinner.Text = text;
@@ -406,9 +429,10 @@ namespace ImForms
             return wasInteracted;
         }
 
-        [CheckID]
-        public bool Image(string text,System.Drawing.Image image , [GenID] ulong? id = null)
+        
+        public bool Image(string text,System.Drawing.Image image ,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id, id1 => new WForms.PictureBox { Name = id1?.ToString(), AutoSize = true });
             var picturebox = ctrl.WfControl as WForms.PictureBox;
             picturebox.Text = text;
@@ -417,9 +441,10 @@ namespace ImForms
             return wasInteracted;
         }
 
-        [CheckID]
-        public bool DateTime(string text,  ref DateTime value, [GenID] ulong? id = null)
+        
+        public bool DateTime(string text,  ref DateTime value,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
+            var id = Hash(callerfilepath, callerlinenumber, callermembername);
             var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = id1?.ToString(), AutoSize = true });
             var spinner = ctrl.WfControl as WForms.DateTimePicker;
             spinner.Text = text;
