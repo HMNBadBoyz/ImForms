@@ -60,7 +60,6 @@ namespace ImFormsUser
                 {
                     x = valueToAssignX;
                 }
-
                 bool xIs1 = (x == 1);
                 mgr.Checkbox("X == 1", ref xIs1);
                 x = xIs1 ? 1 : 0;
