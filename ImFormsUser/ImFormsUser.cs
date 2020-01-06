@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace ImFormsUser
 {
-
     public partial class ImFormsUser : Form
     {
         public ImFormsUser()
@@ -36,6 +35,7 @@ namespace ImFormsUser
             float f = 0;
             string teststr = "";
             bool checkbox = false;
+            var p = 0;
             while (true)
             {
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
@@ -83,10 +83,12 @@ namespace ImFormsUser
 
                     mgr.Checkbox("Display reversed", ref reverseList);
 
-                    foreach (var n in seq) { mgr.Label("[" + n + "]"); }
+                    foreach (var n in seq)
+                    {
+                        mgr.Label("[" + n + "]",n);
+                    }
                 }
 
-                var p = 0;
                 mgr.Space();
                 mgr.Label("Values from other threads can be displayed when a panel refreshes.");
                 mgr.LinkLabel("Try it!");

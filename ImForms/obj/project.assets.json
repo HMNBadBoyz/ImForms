@@ -77,7 +77,9 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "C:\\Users\\Shaz\\.devnuget": {},
+        "https://api.nuget.org/v3/index.json": {},
+        "https://packages.xenko.com/nuget": {}
       },
       "frameworks": {
         "net472": {
@@ -100,7 +102,7 @@
             "version": "[5.1.1, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
       }
     }
   }

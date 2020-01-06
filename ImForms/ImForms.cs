@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Linq;
 using Interop = System.Runtime.InteropServices;
@@ -43,6 +44,28 @@ namespace ImForms
         public ImControl(WForms.Control control) { WfControl = control; }
     }
 
+    public static class Utils
+    {
+        public static int GetDeterministicHashCode(this string str)
+        {
+            unchecked
+            {
+                int hash1 = (5381 << 16) + 5381;
+                int hash2 = hash1;
+
+                for (int i = 0; i < str.Length; i += 2)
+                {
+                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                    if (i == str.Length - 1)
+                        break;
+                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                }
+
+                return hash1 + (hash2 * 1566083941);
+            }
+        }
+    }
+
     public partial class ImFormsMgr
     {
         [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
@@ -53,17 +76,23 @@ namespace ImForms
 
         public string GetOwnFunctionName([CmplTime.CallerMemberName]string s="") => s;
 
-        public ulong? Hash(string a ,int b, string c)
+        
+        public ulong? Hash(string a ,string b, int c,string d)
         {
+            
             unchecked
             {
-                ulong hash0 = (ulong)(a, b, c).GetHashCode();
-                ulong hash1 = (ulong)(a, b, c).GetHashCode();
-                return hash0 | (hash1 << 32);
+                long hash = (long)2166136261;
+                // Suitable nullity checks etc, of course :)
+                hash = (hash * 16777619) ^ a.GetDeterministicHashCode();
+                hash = (hash * 16777619) ^ b.GetDeterministicHashCode();
+                hash = (hash * 16777619) ^ c.GetHashCode();
+                hash = (hash * 16777619) ^ d.GetDeterministicHashCode();
+                return (ulong) hash;
             }
+
         }
 
-        [Flags(), CLSCompliant(false)]
         public enum RedrawWindowFlags : uint
         {
             ///<summary>Invalidates lprcUpdate or hrgnUpdate (only one may be non-NULL). 

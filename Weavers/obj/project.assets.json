@@ -141,7 +141,9 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "C:\\Users\\Shaz\\.devnuget": {},
+        "https://api.nuget.org/v3/index.json": {},
+        "https://packages.xenko.com/nuget": {}
       },
       "frameworks": {
         "net472": {
