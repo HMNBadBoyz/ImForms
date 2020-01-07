@@ -94,7 +94,7 @@ namespace ImFormsUser
                 mgr.LinkLabel("Try it!");
                 
                 mgr.SliderInt("test it",ref p, 0, 10);
-                
+                mgr.Spinner("test spin:", ref p);
                 mgr.Label("y = " + y); 
                 await mgr.NextFrame();
             }
