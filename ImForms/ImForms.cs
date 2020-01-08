@@ -93,6 +93,21 @@ namespace ImForms
 
         }
 
+        public ulong? Hash(string a, int b, string c)
+        {
+
+            unchecked
+            {
+                long hash = (long)2166136261;
+                // Suitable nullity checks etc, of course :)
+                hash = (hash * 16777619) ^ a.GetDeterministicHashCode();
+                hash = (hash * 16777619) ^ b.GetHashCode();
+                hash = (hash * 16777619) ^ c.GetDeterministicHashCode();
+                return (ulong)hash;
+            }
+
+        }
+
         public enum RedrawWindowFlags : uint
         {
             ///<summary>Invalidates lprcUpdate or hrgnUpdate (only one may be non-NULL). 

@@ -23,7 +23,7 @@ using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
 using System.Diagnostics;
 <#
-    var idgen = "var id = Hash(text,callerfilepath, callerlinenumber + ctrlcount, callermembername);";
+    var idgen = "var id = Hash($\"{callerfilepath}#L{callerlinenumber}\" ,   ctrlcount, callermembername);";
     var firstpass= "bool FirstPass = !ControlExists(id);";
     var commonarguments = "int ctrlcount=0,[CmplTime.CallerFilePath] string callerfilepath =\"\",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = \"\"";
 #>
