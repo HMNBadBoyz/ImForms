@@ -1,7 +1,4 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
-<#@ assembly name="System.Core" #>
-<#@ output extension=".cs" #>
-
+﻿
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
@@ -11,44 +8,39 @@ using CmplTime = System.Runtime.CompilerServices;
 using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
 using System.Diagnostics;
-<#
-    var idgen = "var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();";
-    var firstpass= "bool FirstPass = !ControlExists(id);";
-    var commonarguments = "[CmplTime.CallerFilePath] string callerfilepath =\"\",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = \"\"";
-#>
 namespace ImForms
 {
   
     public partial class ImFormsMgr
     {
-	    public void Space(<#=commonarguments#>)
+	    public void Space([CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
             Label("",callerfilepath, callerlinenumber, callermembername);
         }
         
-        public void Label(string text, <#=commonarguments#>)
+        public void Label(string text, [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, id1 => new WForms.Label { Name = id1?.ToString(),Tag = id, AutoSize = true });
             ctrl.WfControl.Text = text;
         }
 
         
-        public bool Button(string text, <#=commonarguments#>)
+        public bool Button(string text, [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id,x => InitControlForClicking(new WForms.Button(),x));
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
         }
 
         
-        public bool LinkLabel(string text,  <#=commonarguments#>)
+        public bool LinkLabel(string text,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.LinkLabel(), x));
             ctrl.WfControl.Text = text;
             return InteractedElementId == ctrl.ID;
@@ -56,10 +48,10 @@ namespace ImForms
 
 
         
-        public bool Checkbox(string text, ref bool checkBoxChecked,  <#=commonarguments#>)
+        public bool Checkbox(string text, ref bool checkBoxChecked,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.CheckBox(), x));
             var checkBox = ctrl.WfControl as WForms.CheckBox;
             checkBox.Text = text;
@@ -74,10 +66,10 @@ namespace ImForms
 
 
         
-        public bool RadioButton(string text, ref int value, int checkAgainst,  <#=commonarguments#>)
+        public bool RadioButton(string text, ref int value, int checkAgainst,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.RadioButton(), x));
             var radioButton = ctrl.WfControl as WForms.RadioButton;
             radioButton.Text = text;
@@ -92,10 +84,10 @@ namespace ImForms
 
 
         
-        public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, <#=commonarguments#>)
+        public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TrackBar(), x));
             var trackbar = ctrl.WfControl as WForms.TrackBar;
             trackbar.Text = text;
@@ -111,10 +103,10 @@ namespace ImForms
 
 
         
-        public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f,  <#=commonarguments#>)
+        public bool SliderFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id , x => InitControlForClicking(new WForms.TrackBar(), x));
             var trackbar = ctrl.WfControl as WForms.TrackBar;
             trackbar.Text = text;
@@ -131,10 +123,10 @@ namespace ImForms
 
 
         
-        public bool ProgressInt(string text, ref int value, int minval = 0, int maxval = 1,  <#=commonarguments#>)
+        public bool ProgressInt(string text, ref int value, int minval = 0, int maxval = 1,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id , x => InitControlForClicking(new WForms.ProgressBar(), x));
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
             trackbar.Text = text;
@@ -147,10 +139,10 @@ namespace ImForms
 
 
         
-        public bool ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f,  <#=commonarguments#>)
+        public bool ProgressFloat(string text, ref float value, float minval = 0.0f, float maxval = 1.0f,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ProgressBar(), x));
             var trackbar = ctrl.WfControl as WForms.ProgressBar;
             trackbar.Text = text;
@@ -164,10 +156,10 @@ namespace ImForms
 
 
         
-        public bool InputText(string text,ref string output,  <#=commonarguments#>)
+        public bool InputText(string text,ref string output,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TextBox(), x));
             var textbox = ctrl.WfControl as WForms.TextBox;
             textbox.Text = text;
@@ -179,10 +171,10 @@ namespace ImForms
 
 
         
-        public bool InputMultilineText(string text, ref string output,  <#=commonarguments#>)
+        public bool InputMultilineText(string text, ref string output,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TextBox(), x));
             var multilinetextbox = ctrl.WfControl as WForms.TextBox;
             if (FirstPass)
@@ -204,11 +196,11 @@ namespace ImForms
 
 
         
-        public bool TreeView(IList<string> texts, ref int selectedIndex,  <#=commonarguments#>)
+        public bool TreeView(IList<string> texts, ref int selectedIndex,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
             var text = texts[0];
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TreeView(), x));
             var treeview = ctrl.WfControl as WForms.TreeView;
             treeview.Text = texts[0];
@@ -228,11 +220,11 @@ namespace ImForms
         }
 
         
-        public bool TreeView(IList<string> texts,   <#=commonarguments#>)
+        public bool TreeView(IList<string> texts,   [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
             var text = texts[0];
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TreeView(), x));
             var treeview = ctrl.WfControl as WForms.TreeView;
             treeview.Text = texts[0];
@@ -250,10 +242,10 @@ namespace ImForms
 
 
         
-        public bool ComboBox(string text,ref string selecteditem ,string[] items , <#=commonarguments#>)
+        public bool ComboBox(string text,ref string selecteditem ,string[] items , [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ComboBox(), x));
             var combobox = ctrl.WfControl as WForms.ComboBox;
             combobox.Text = text;
@@ -273,10 +265,10 @@ namespace ImForms
 
 
         
-        public bool ListBox(string text, ref string selecteditem,string[] items,  <#=commonarguments#>)
+        public bool ListBox(string text, ref string selecteditem,string[] items,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ListBox(), x));
             var listbox = ctrl.WfControl as WForms.ListBox;
             listbox.Text = text;
@@ -294,10 +286,10 @@ namespace ImForms
 
 
         
-        public bool CheckedListBox(string text, ref string selecteditem, string[] items, <#=commonarguments#>)
+        public bool CheckedListBox(string text, ref string selecteditem, string[] items, [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.CheckedListBox(), x));
             var checkedlistbox = ctrl.WfControl as WForms.CheckedListBox;
             checkedlistbox.Text = text;
@@ -314,10 +306,10 @@ namespace ImForms
         }
 
         
-        public bool Spinner(string text, ref int value, <#=commonarguments#>)
+        public bool Spinner(string text, ref int value, [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.NumericUpDown(), x));
             var spinner = ctrl.WfControl as WForms.NumericUpDown;
             spinner.Text = text;
@@ -328,10 +320,10 @@ namespace ImForms
         }
 
         
-        public bool Image(string text,System.Drawing.Image image ,  <#=commonarguments#>)
+        public bool Image(string text,System.Drawing.Image image ,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, id1 => new WForms.PictureBox { Name = id1?.ToString(), AutoSize = true });
             var picturebox = ctrl.WfControl as WForms.PictureBox;
             picturebox.Text = text;
@@ -341,10 +333,10 @@ namespace ImForms
         }
 
         
-        public bool DateTime(string text,  ref DateTime value,  <#=commonarguments#>)
+        public bool DateTime(string text,  ref DateTime value,  [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
-            <#= idgen #>
-            <#= firstpass #>
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = id1?.ToString(), AutoSize = true });
             var spinner = ctrl.WfControl as WForms.DateTimePicker;
             spinner.Text = text;

@@ -76,6 +76,21 @@ namespace ImFormsUser
 
                     if (mgr.Button("Add to end")) { list.Add(list.LastOrDefault() + 1); }
 
+                    if (mgr.Button("Add to 10 end"))
+                    {
+                        for (int i = 0; i < 10; i++)
+                        {
+                            list.Add(list.LastOrDefault() + 1);
+                        }
+                    }
+                    if (mgr.Button("Add to 100 end"))
+                    {
+                        for (int i = 0; i < 100; i++)
+                        {
+                            list.Add(list.LastOrDefault() + 1);
+                        }
+                    }
+
                     if (list.Any() && mgr.Button("Remove from front"))
                     {
                         list.RemoveAt(0);
@@ -85,7 +100,8 @@ namespace ImFormsUser
 
                     foreach (var n in seq)
                     {
-                        mgr.Label("[" + n + "]",n);
+                        mgr.Label("p","test.txt",n,"test");
+                        //mgr.Label("[" + n + "]",callerlinenumber:n);
                     }
                 }
 

@@ -10,7 +10,19 @@ using WFControlList = System.Windows.Forms.Control.ControlCollection;
 
 namespace ImForms
 {
-    public  class GenIDAttribute : Attribute
+    public static class ExtensionMethods
+    {
+        public static void Clear(this WFControlList controls, bool dispose)
+        {
+            for (int ix = controls.Count - 1; ix >= 0; --ix)
+            {
+                if (dispose) controls[ix].Dispose();
+                else controls.RemoveAt(ix);
+            }
+        }
+    }
+
+    public class GenIDAttribute : Attribute
     {
 
     }
@@ -24,6 +36,7 @@ namespace ImForms
     {
         public ImFormsIDException(string message) : base(message)
         {
+
         }
     }
 
@@ -44,27 +57,6 @@ namespace ImForms
         public ImControl(WForms.Control control) { WfControl = control; }
     }
 
-    public static class Utils
-    {
-        public static int GetDeterministicHashCode(this string str)
-        {
-            unchecked
-            {
-                int hash1 = (5381 << 16) + 5381;
-                int hash2 = hash1;
-
-                for (int i = 0; i < str.Length; i += 2)
-                {
-                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
-                    if (i == str.Length - 1)
-                        break;
-                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
-                }
-
-                return hash1 + (hash2 * 1566083941);
-            }
-        }
-    }
 
     public partial class ImFormsMgr
     {
@@ -75,38 +67,6 @@ namespace ImForms
         public static extern bool RedrawWindow(Interop.HandleRef hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
 
         public string GetOwnFunctionName([CmplTime.CallerMemberName]string s="") => s;
-
-        
-        public ulong? Hash(string a ,string b, int c,string d)
-        {
-            
-            unchecked
-            {
-                long hash = (long)2166136261;
-                // Suitable nullity checks etc, of course :)
-                hash = (hash * 16777619) ^ a.GetDeterministicHashCode();
-                hash = (hash * 16777619) ^ b.GetDeterministicHashCode();
-                hash = (hash * 16777619) ^ c.GetHashCode();
-                hash = (hash * 16777619) ^ d.GetDeterministicHashCode();
-                return (ulong) hash;
-            }
-
-        }
-
-        public ulong? Hash(string a, int b, string c)
-        {
-
-            unchecked
-            {
-                long hash = (long)2166136261;
-                // Suitable nullity checks etc, of course :)
-                hash = (hash * 16777619) ^ a.GetDeterministicHashCode();
-                hash = (hash * 16777619) ^ b.GetHashCode();
-                hash = (hash * 16777619) ^ c.GetDeterministicHashCode();
-                return (ulong)hash;
-            }
-
-        }
 
         public enum RedrawWindowFlags : uint
         {
@@ -242,7 +202,7 @@ namespace ImForms
         public ImControl GetLastCalledControl() => LastCalledControl;
 
         
-       
+
         public void Refresh()
         {
             if (!TCS.Task.IsCompleted)
@@ -251,6 +211,7 @@ namespace ImForms
             }
         }
 
+       
         public async Task NextFrame()
         {
             PrevInteractedElementId = InteractedElementId;
@@ -265,6 +226,7 @@ namespace ImForms
             {
                 foreach (var ctrl in undrawnControls.Take(ctrlsToRemoveForCleanup))
                 {
+                    //if(!ctrl.WfControl.IsDisposed) ctrl.WfControl.Dispose();
                     ImControls.Remove(ctrl.ID);
                 }
             }
@@ -280,7 +242,9 @@ namespace ImForms
             
             if (controlsChanged)
             {
+                DisplayedControls.Owner.SuspendLayout();
                 var handle = new Interop.HandleRef(DisplayedControls.Owner, DisplayedControls.Owner.Handle);
+                
                 EnableRepaint(handle, false);
                 DisplayedControls.Clear();
                 DisplayedControls.AddRange(sortedControls);
@@ -288,7 +252,7 @@ namespace ImForms
                 var isContainer = true;
                 RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, isContainer ? RedrawWindowFlags.Erase | RedrawWindowFlags.Frame | RedrawWindowFlags.Invalidate | RedrawWindowFlags.AllChildren :
                     RedrawWindowFlags.NoErase | RedrawWindowFlags.Invalidate | RedrawWindowFlags.InternalPaint);
-                DisplayedControls.Owner.Refresh();
+                DisplayedControls.Owner.ResumeLayout();
             }
 
             // Automatically go to next frame for each requested redraw
