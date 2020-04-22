@@ -105,7 +105,7 @@ namespace ImForms
             var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id, x => InitControlForClicking(new BufferedTrackBar(), x));
-            var trackbar = ctrl.WfControl as BufferedTrackBar;
+            var trackbar = ctrl.WfControl as WForms.TrackBar;
             trackbar.Text = text;
             trackbar.Minimum = minval;
             trackbar.Maximum = maxval;
@@ -124,7 +124,7 @@ namespace ImForms
             var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
             bool FirstPass = !ControlExists(id);
             var ctrl = ProcureControl(id , x => InitControlForClicking(new BufferedTrackBar(), x));
-            var trackbar = ctrl.WfControl as BufferedTrackBar;
+            var trackbar = ctrl.WfControl as WForms.TrackBar;
             trackbar.Text = text;
             var unitscale = (maxval - minval)*100; 
             trackbar.Minimum = (int)(minval*unitscale);

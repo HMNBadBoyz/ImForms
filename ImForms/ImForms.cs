@@ -29,35 +29,24 @@ namespace ImForms
 
     class BufferedTrackBar : WForms.TrackBar
     {
-        protected override WForms.CreateParams CreateParams
+        private const int WM_ERASEBKGND = 20;
+
+        [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Unrestricted = true)]
+        protected override void WndProc(ref WForms.Message m)
         {
-            // TODO(shazan) : Figure this out
-            get
+            //NOTE(shazan) : Only do this for System Drawn (common controls) do not do this to
+            //               user drawn controls or it might cause artifacts
+            if (m.Msg == WM_ERASEBKGND)
             {
-                const int TBS_TRANSPARENTBKGND = 0x1000;
-                const int TBS_NOTIFYBEFOREMOVE = 0x0800;
-                new System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode).Demand();
-
-                WForms.CreateParams cp = base.CreateParams;
-                cp.Style |= TBS_TRANSPARENTBKGND;
-                cp.Style |= TBS_NOTIFYBEFOREMOVE;
-
-                return cp;
+                m.Result = IntPtr.Zero;
+            }
+            else
+            {
+                base.WndProc(ref m);
             }
         }
     }
 
-    public static class ExtensionMethods
-    {
-        public static void Clear(this WFControlList controls, bool dispose)
-        {
-            for (int ix = controls.Count - 1; ix >= 0; --ix)
-            {
-                if (dispose) controls[ix].Dispose();
-                else controls.RemoveAt(ix);
-            }
-        }
-    }
 
     public class GenIDAttribute : Attribute
     {
@@ -102,15 +91,6 @@ namespace ImForms
         
         [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
         public static extern bool RedrawWindow(Interop.HandleRef hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
-
-        [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
-        static extern bool LockWindowUpdate(IntPtr hWndLock);
-
-        [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
         public string GetOwnFunctionName([CmplTime.CallerMemberName]string s="") => s;
 
         public enum RedrawWindowFlags : uint
@@ -171,21 +151,7 @@ namespace ImForms
             const int WM_SETREDRAW = 0x000B;
             SendMessage(handle, WM_SETREDRAW, new IntPtr(enable ? 1 : 0), IntPtr.Zero);
         }
-        public static void SetDoubleBuffered(WForms.Control c)
-        {
-            //Taxes: Remote Desktop Connection and painting
-            //http://blogs.msdn.com/oldnewthing/archive/2006/01/03/508694.aspx
-            if (System.Windows.Forms.SystemInformation.TerminalServerSession)
-                return;
 
-            System.Reflection.PropertyInfo aProp =
-                typeof(System.Windows.Forms.Control).GetProperty(
-                    "DoubleBuffered",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Instance);
-
-            aProp.SetValue(c, true, null);
-        }
         private int RemainingRedraws = 0;
         private TaskCompletionSource<bool> TCS;
         private readonly Dictionary<ulong?, ImControl> ImControls;
@@ -295,7 +261,7 @@ namespace ImForms
             {
                 foreach (var ctrl in undrawnControls.Take(ctrlsToRemoveForCleanup))
                 {
-                    //if(!ctrl.WfControl.IsDisposed) ctrl.WfControl.Dispose();
+                    if(!ctrl.WfControl.IsDisposed) ctrl.WfControl.Dispose();
                     ImControls.Remove(ctrl.ID);
                 }
             }
@@ -324,8 +290,6 @@ namespace ImForms
                 RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, isContainer ? RedrawWindowFlags.Erase | RedrawWindowFlags.Frame | RedrawWindowFlags.Invalidate | RedrawWindowFlags.AllChildren :
                     RedrawWindowFlags.NoErase | RedrawWindowFlags.Invalidate | RedrawWindowFlags.InternalPaint);
                 DisplayedControls.Owner.ResumeLayout();
-
-
             }
 
             // Automatically go to next frame for each requested redraw
