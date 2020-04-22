@@ -36,6 +36,7 @@ namespace ImFormsUser
             string teststr = "";
             bool checkbox = false;
             var p = 0;
+            string res = "";
             while (true)
             {
                 mgr.Label("This ImForms panel refreshes only when there is user interaction");
@@ -44,12 +45,11 @@ namespace ImFormsUser
                 mgr.Label("x ="+x);
                 mgr.Label("f ="+f);
                 mgr.TreeView(new string[] { "bdfihdf", "dshsdiusdh" });
-                string res = "";
                 if (mgr.ComboBox("text box",ref res,new string[] { "t","f","c" }))
                 {
                    mgr.Label(res);
                 }
-                mgr.InputMultilineText("Text box:",ref teststr);
+                mgr.InputText("Text box:",ref teststr);
                 mgr.Label(teststr);
                 mgr.RadioButton("0", ref x, 0);
                 mgr.RadioButton("1", ref x, 1);

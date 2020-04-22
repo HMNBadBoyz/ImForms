@@ -4,6 +4,11 @@
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Update="ImForms.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <None Update="FodyWeavers.xsd">
       <SubType>Designer</SubType>
     </None>

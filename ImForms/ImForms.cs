@@ -10,6 +10,43 @@ using WFControlList = System.Windows.Forms.Control.ControlCollection;
 
 namespace ImForms
 {
+    class BufferedTreeView : WForms.TreeView
+    {
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            SendMessage(this.Handle, TVM_SETEXTENDEDSTYLE, (IntPtr)TVS_EX_DOUBLEBUFFER, (IntPtr)TVS_EX_DOUBLEBUFFER);
+            base.OnHandleCreated(e);
+        }
+        // Pinvoke:
+        private const int TVM_SETEXTENDEDSTYLE = 0x1100 + 44;
+        private const int TVM_GETEXTENDEDSTYLE = 0x1100 + 45;
+        private const int TVS_EX_DOUBLEBUFFER = 0x0004;
+        
+        [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
+    }
+
+
+    class BufferedTrackBar : WForms.TrackBar
+    {
+        protected override WForms.CreateParams CreateParams
+        {
+            // TODO(shazan) : Figure this out
+            get
+            {
+                const int TBS_TRANSPARENTBKGND = 0x1000;
+                const int TBS_NOTIFYBEFOREMOVE = 0x0800;
+                new System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode).Demand();
+
+                WForms.CreateParams cp = base.CreateParams;
+                cp.Style |= TBS_TRANSPARENTBKGND;
+                cp.Style |= TBS_NOTIFYBEFOREMOVE;
+
+                return cp;
+            }
+        }
+    }
+
     public static class ExtensionMethods
     {
         public static void Clear(this WFControlList controls, bool dispose)
@@ -66,6 +103,14 @@ namespace ImForms
         [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
         public static extern bool RedrawWindow(Interop.HandleRef hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
 
+        [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
+        static extern bool LockWindowUpdate(IntPtr hWndLock);
+
+        [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [Interop.DllImport("user32.dll", CharSet = Interop.CharSet.Auto, SetLastError = false)]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
         public string GetOwnFunctionName([CmplTime.CallerMemberName]string s="") => s;
 
         public enum RedrawWindowFlags : uint
@@ -126,7 +171,21 @@ namespace ImForms
             const int WM_SETREDRAW = 0x000B;
             SendMessage(handle, WM_SETREDRAW, new IntPtr(enable ? 1 : 0), IntPtr.Zero);
         }
-        
+        public static void SetDoubleBuffered(WForms.Control c)
+        {
+            //Taxes: Remote Desktop Connection and painting
+            //http://blogs.msdn.com/oldnewthing/archive/2006/01/03/508694.aspx
+            if (System.Windows.Forms.SystemInformation.TerminalServerSession)
+                return;
+
+            System.Reflection.PropertyInfo aProp =
+                typeof(System.Windows.Forms.Control).GetProperty(
+                    "DoubleBuffered",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Instance);
+
+            aProp.SetValue(c, true, null);
+        }
         private int RemainingRedraws = 0;
         private TaskCompletionSource<bool> TCS;
         private readonly Dictionary<ulong?, ImControl> ImControls;
@@ -147,6 +206,7 @@ namespace ImForms
             TCS = new TaskCompletionSource<bool>();
             CurrentSortKey = 0;
             DisplayedControls = panel.Controls;
+            
         }
 
         public void QueueRedraws(int numRedraws) { RemainingRedraws += numRedraws; }
@@ -199,9 +259,18 @@ namespace ImForms
             return wfCtrl;
         }
 
-        public ImControl GetLastCalledControl() => LastCalledControl;
+        public WForms.Control InitControlForClickingAndTyping(WForms.Control wfCtrl, ulong? id)
+        {
+            wfCtrl.Name = id?.ToString();
+            wfCtrl.Tag = id;
+            wfCtrl.Click += LetImGuiHandleIt;
+            wfCtrl.TabStopChanged += LetImGuiHandleIt;
+            wfCtrl.AutoSize = true;
+            wfCtrl.TextChanged += LetImGuiHandleIt;
+            return wfCtrl;
+        }
 
-        
+        public ImControl GetLastCalledControl() => LastCalledControl;
 
         public void Refresh()
         {
@@ -244,15 +313,19 @@ namespace ImForms
             {
                 DisplayedControls.Owner.SuspendLayout();
                 var handle = new Interop.HandleRef(DisplayedControls.Owner, DisplayedControls.Owner.Handle);
-                
+
                 EnableRepaint(handle, false);
+
                 DisplayedControls.Clear();
-                DisplayedControls.AddRange(sortedControls);
+                DisplayedControls.AddRange(sortedControls); 
                 EnableRepaint(handle, true);
                 var isContainer = true;
+                
                 RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, isContainer ? RedrawWindowFlags.Erase | RedrawWindowFlags.Frame | RedrawWindowFlags.Invalidate | RedrawWindowFlags.AllChildren :
                     RedrawWindowFlags.NoErase | RedrawWindowFlags.Invalidate | RedrawWindowFlags.InternalPaint);
                 DisplayedControls.Owner.ResumeLayout();
+
+
             }
 
             // Automatically go to next frame for each requested redraw

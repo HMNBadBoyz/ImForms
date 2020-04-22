@@ -90,14 +90,30 @@ namespace ImForms
             return wasInteracted ;
         }
 
+        public bool RadioButton(string text, bool booleancheck,  <#=commonarguments#>)
+        {
+            <#= idgen #>
+            <#= firstpass #>
+            var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.RadioButton(), x));
+            var radioButton = ctrl.WfControl as WForms.RadioButton;
+            radioButton.Text = text;
+            radioButton.AutoCheck = false;
+            var wasInteracted = InteractedElementId == ctrl.ID ;
+
+            radioButton.Checked = booleancheck;
+
+            return wasInteracted ;
+        }
+
+
 
         
         public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, <#=commonarguments#>)
         {
             <#= idgen #>
             <#= firstpass #>
-            var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TrackBar(), x));
-            var trackbar = ctrl.WfControl as WForms.TrackBar;
+            var ctrl = ProcureControl(id, x => InitControlForClicking(new BufferedTrackBar(), x));
+            var trackbar = ctrl.WfControl as BufferedTrackBar;
             trackbar.Text = text;
             trackbar.Minimum = minval;
             trackbar.Maximum = maxval;
@@ -115,8 +131,8 @@ namespace ImForms
         {
             <#= idgen #>
             <#= firstpass #>
-            var ctrl = ProcureControl(id , x => InitControlForClicking(new WForms.TrackBar(), x));
-            var trackbar = ctrl.WfControl as WForms.TrackBar;
+            var ctrl = ProcureControl(id , x => InitControlForClicking(new BufferedTrackBar(), x));
+            var trackbar = ctrl.WfControl as BufferedTrackBar;
             trackbar.Text = text;
             var unitscale = (maxval - minval)*100; 
             trackbar.Minimum = (int)(minval*unitscale);
@@ -168,10 +184,23 @@ namespace ImForms
         {
             <#= idgen #>
             <#= firstpass #>
-            var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TextBox(), x));
-            var textbox = ctrl.WfControl as WForms.TextBox;
-            textbox.Text = text;
-            textbox.Multiline = false;
+            //NOTE(shazan) : use RichTextBox instead of Textbox For Flickerfree 
+            //(https://stackoverflow.com/questions/1333393/how-to-prevent-a-windows-forms-textbox-from-flickering-on-resize)
+            var ctrl = ProcureControl(id, x => InitControlForClickingAndTyping(new WForms.RichTextBox(), x));
+            var textbox = ctrl.WfControl as WForms.RichTextBox;
+            if (FirstPass)
+            {
+                
+                textbox.ShortcutsEnabled = false;
+                textbox.DetectUrls = false;
+                textbox.Text = text;
+                textbox.WordWrap = false;
+                textbox.Multiline = false;
+                textbox.ScrollBars = WForms.RichTextBoxScrollBars.Both;
+                textbox.TextChanged += (o,e) => {
+                   textbox.SelectionStart = textbox.Text.Length;
+                };
+            }
             output = textbox.Text;
             var wasInteracted = InteractedElementId == ctrl.ID;
             return wasInteracted;
@@ -183,18 +212,23 @@ namespace ImForms
         {
             <#= idgen #>
             <#= firstpass #>
-            var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TextBox(), x));
-            var multilinetextbox = ctrl.WfControl as WForms.TextBox;
+            
+            //NOTE(shazan) : use RichTextBox instead of Textbox For Flickerfree 
+            //(https://stackoverflow.com/questions/1333393/how-to-prevent-a-windows-forms-textbox-from-flickering-on-resize)
+            
+            var ctrl = ProcureControl(id, x => InitControlForClickingAndTyping(new WForms.RichTextBox(), x));
+            var multilinetextbox = ctrl.WfControl as WForms.RichTextBox;
             if (FirstPass)
             {
+                multilinetextbox.ShortcutsEnabled = false;
+                multilinetextbox.DetectUrls = false;
                 multilinetextbox.Text = text;
                 multilinetextbox.WordWrap = false;
                 multilinetextbox.Multiline = true;
-                multilinetextbox.ScrollBars = WForms.ScrollBars.Both;
-                multilinetextbox.Size = new System.Drawing.Size(multilinetextbox.Size.Width, multilinetextbox.Size.Height * 3);
+                multilinetextbox.ScrollBars = WForms.RichTextBoxScrollBars.Both;
+                multilinetextbox.Size = new System.Drawing.Size(multilinetextbox.Size.Width, multilinetextbox.Size.Height);
                 multilinetextbox.TextChanged += (o,e) => {
                     multilinetextbox.SelectionStart = multilinetextbox.Text.Length;
-                    multilinetextbox.ScrollToCaret();
                 };
             }
             output = multilinetextbox.Text;
@@ -209,7 +243,7 @@ namespace ImForms
             var text = texts[0];
             <#= idgen #>
             <#= firstpass #>
-            var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TreeView(), x));
+            var ctrl = ProcureControl(id, x => InitControlForClicking(new BufferedTreeView(), x));
             var treeview = ctrl.WfControl as WForms.TreeView;
             treeview.Text = texts[0];
             if (FirstPass)
@@ -228,12 +262,13 @@ namespace ImForms
         }
 
         
+        
         public bool TreeView(IList<string> texts,   <#=commonarguments#>)
         {
             var text = texts[0];
             <#= idgen #>
             <#= firstpass #>
-            var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.TreeView(), x));
+            var ctrl = ProcureControl(id, x => InitControlForClicking(new BufferedTreeView(), x));
             var treeview = ctrl.WfControl as WForms.TreeView;
             treeview.Text = texts[0];
             if (FirstPass)
