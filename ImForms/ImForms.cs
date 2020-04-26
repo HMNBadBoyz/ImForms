@@ -79,7 +79,7 @@ namespace ImForms
         public ImDraw State { get; set; }
         public int SortKey { get; set; }
         public ulong? ID { get; set; }
-
+        public object TempData { get; set; }
         public ImControl(WForms.Control control) { WfControl = control; }
     }
 
@@ -172,7 +172,6 @@ namespace ImForms
             TCS = new TaskCompletionSource<bool>();
             CurrentSortKey = 0;
             DisplayedControls = panel.Controls;
-            
         }
 
         public void QueueRedraws(int numRedraws) { RemainingRedraws += numRedraws; }
@@ -259,7 +258,8 @@ namespace ImForms
 
             if (undrawnControls.Count == ctrlsToTriggerCleanup)
             {
-                foreach (var ctrl in undrawnControls.Take(ctrlsToRemoveForCleanup))
+                var controlstaken = undrawnControls.Take(ctrlsToRemoveForCleanup);
+                foreach (var ctrl in controlstaken)
                 {
                     if(!ctrl.WfControl.IsDisposed) ctrl.WfControl.Dispose();
                     ImControls.Remove(ctrl.ID);
@@ -279,14 +279,13 @@ namespace ImForms
             {
                 DisplayedControls.Owner.SuspendLayout();
                 var handle = new Interop.HandleRef(DisplayedControls.Owner, DisplayedControls.Owner.Handle);
-
                 EnableRepaint(handle, false);
 
                 DisplayedControls.Clear();
                 DisplayedControls.AddRange(sortedControls); 
+                
                 EnableRepaint(handle, true);
                 var isContainer = true;
-                
                 RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, isContainer ? RedrawWindowFlags.Erase | RedrawWindowFlags.Frame | RedrawWindowFlags.Invalidate | RedrawWindowFlags.AllChildren :
                     RedrawWindowFlags.NoErase | RedrawWindowFlags.Invalidate | RedrawWindowFlags.InternalPaint);
                 DisplayedControls.Owner.ResumeLayout();

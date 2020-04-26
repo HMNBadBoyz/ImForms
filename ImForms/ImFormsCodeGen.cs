@@ -253,6 +253,7 @@ namespace ImForms
             return wasInteracted;
         }
 
+
         
         
         public bool TreeView(IList<string> texts,   [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
@@ -265,18 +266,79 @@ namespace ImForms
             treeview.Text = texts[0];
             if (FirstPass)
             {
-                foreach (var text0 in texts)
+                foreach(var text0 in texts)
                 {
-                    treeview.Nodes.Add(id.ToString(), text0);
+                    treeview.Nodes.Add( id.ToString() , text0 );
                 }
             }
             var wasInteracted = InteractedElementId == ctrl.ID;
             return wasInteracted;
         }
 
+        public bool BeginTree(string texts,   [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
+        {
+         return true;
+        }
+
+        public void EndTree()
+        {
+
+        }
 
 
+        public bool BeginCombo(string text, [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
+        {
+            var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
+            bool FirstPass = !ControlExists(id);
+            var ctrl = ProcureControl(id, x => InitControlForClicking(new WForms.ComboBox(), x));
+            var combobox = ctrl.WfControl as WForms.ComboBox;
+            combobox.Text = text;
+            if (FirstPass) {
+                combobox.Click -= LetImGuiHandleIt;
+                combobox.DropDown += LetImGuiHandleIt;
+                combobox.DropDownClosed += LetImGuiHandleIt;
+                combobox.DropDownStyle = WForms.ComboBoxStyle.DropDownList;
+                ctrl.TempData = new List<string>();
+            }
+            var wasInteracted = InteractedElementId == ctrl.ID || PrevInteractedElementId == ctrl.ID;
+            
+            return wasInteracted;
+        }
         
+        public bool Combo(string item)
+        {
+           var ctrl = GetLastCalledControl();
+           var Result = false;
+           if(ctrl.WfControl is WForms.ComboBox combobox)
+           {
+                (ctrl.TempData as List<string>).Add(item);
+                Result = (combobox.SelectedItem?.ToString() == (item));
+           }
+           else
+           {
+                throw new Exception("Invaild Call");
+           }
+           
+           return Result;
+        }
+
+        public void EndCombo()
+        {
+           var ctrl = GetLastCalledControl();
+           if(ctrl.WfControl is WForms.ComboBox combobox)
+           {
+                var index = combobox.SelectedIndex;
+                combobox.Items.Clear();
+                combobox.Items.AddRange((ctrl.TempData as List<string>).ToArray());
+                (ctrl.TempData as List<string>).Clear();
+                if(index < combobox.Items.Count) combobox.SelectedIndex = index;
+           }
+           else
+           {
+                throw new Exception("Invaild Call");
+           }
+        }
+
         public bool ComboBox(string text,ref string selecteditem ,string[] items , [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
             var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();
