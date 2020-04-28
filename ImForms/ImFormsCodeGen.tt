@@ -10,9 +10,10 @@ using Interop = System.Runtime.InteropServices;
 using CmplTime = System.Runtime.CompilerServices;
 using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
+using IDType = System.ValueTuple<string,int,string>;
 using System.Diagnostics;
 <#
-    var idgen = "var id = (ulong?) (callerfilepath,callerlinenumber,callermembername).GetHashCode();";
+    var idgen = "var id = new IDType(callerfilepath,callerlinenumber,callermembername);";
     var firstpass= "bool FirstPass = !ControlExists(id);";
     var commonarguments = "[CmplTime.CallerFilePath] string callerfilepath =\"\",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = \"\"";
 #>
@@ -30,7 +31,7 @@ namespace ImForms
         {
             <#= idgen #>
             <#= firstpass #>
-            var ctrl = ProcureControl(id, id1 => new WForms.Label { Name = id1?.ToString(),Tag = id, AutoSize = true });
+            var ctrl = ProcureControl(id, id1 => new WForms.Label { Name = id1?.Item1.ToString(),Tag = id, AutoSize = true });
             ctrl.WfControl.Text = text;
         }
 
@@ -271,7 +272,7 @@ namespace ImForms
             <#= firstpass #>
             var ctrl = ProcureControl(id, x => InitControlForClicking(new BufferedTreeView(), x));
             var treeview = ctrl.WfControl as WForms.TreeView;
-            treeview.Text = texts[0];
+            treeview.Text = text;
             if (FirstPass)
             {
                 foreach(var text0 in texts)
@@ -283,9 +284,19 @@ namespace ImForms
             return wasInteracted;
         }
 
-        public bool BeginTree(string texts,   <#=commonarguments#>)
+        public bool BeginTree(string text,   <#=commonarguments#>)
         {
-         return true;
+            <#= idgen #>
+            <#= firstpass #>
+            var ctrl = ProcureControl(id, x => InitControlForClicking(new BufferedTreeView(), x));
+            var treeview = ctrl.WfControl as WForms.TreeView;
+            treeview.Text = text;
+            if (FirstPass)
+            {
+               
+            }
+            var wasInteracted = InteractedElementId == ctrl.ID;
+            return wasInteracted;
         }
 
         public void EndTree()

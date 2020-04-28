@@ -7,7 +7,7 @@ using Interop = System.Runtime.InteropServices;
 using CmplTime = System.Runtime.CompilerServices;
 using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
-
+using IDType = System.ValueTuple<string,int,string>;
 namespace ImForms
 {
     class BufferedTreeView : WForms.TreeView
@@ -78,7 +78,7 @@ namespace ImForms
         public readonly WForms.Control WfControl;
         public ImDraw State { get; set; }
         public int SortKey { get; set; }
-        public ulong? ID { get; set; }
+        public IDType? ID { get; set; }
         public object TempData { get; set; }
         public ImControl(WForms.Control control) { WfControl = control; }
     }
@@ -154,21 +154,21 @@ namespace ImForms
 
         private int RemainingRedraws = 0;
         private TaskCompletionSource<bool> TCS;
-        private readonly Dictionary<ulong?, ImControl> ImControls;
+        private readonly Dictionary<IDType?, ImControl> ImControls;
         public WFControlList DisplayedControls;
         private int CurrentSortKey;
-        private ulong? InteractedElementId;
+        private IDType? InteractedElementId;
         private ImControl LastCalledControl;
 
         // OH NOTE This could be configurable by the user in the _distant_ future
         private  int RedrawsPerInteraction = 1;
 
-        private ulong? PrevInteractedElementId;
+        private IDType? PrevInteractedElementId;
 
         public ImFormsMgr(WForms.Panel panel)
         {
             InteractedElementId = null;
-            ImControls = new Dictionary<ulong?, ImControl>();
+            ImControls = new Dictionary<IDType?, ImControl>();
             TCS = new TaskCompletionSource<bool>();
             CurrentSortKey = 0;
             DisplayedControls = panel.Controls;
@@ -180,22 +180,22 @@ namespace ImForms
         {
             if (sender is WForms.TreeNode)
             {
-                InteractedElementId = (ulong)(((WForms.TreeNode)sender).Tag);
+                InteractedElementId = (IDType)(((WForms.TreeNode)sender).Tag);
             }
             else
             {
-                InteractedElementId = (ulong)(((WForms.Control)sender).Tag);
+                InteractedElementId = (IDType)(((WForms.Control)sender).Tag);
             }
             QueueRedraws(RedrawsPerInteraction);
             Refresh();
         }
 
-        public bool ControlExists(ulong? id)
+        public bool ControlExists(IDType? id)
         {
             return ImControls.ContainsKey(id);
         }
 
-        public ImControl ProcureControl(ulong? id, ImFormsCtrlMaker maker )
+        public ImControl ProcureControl(IDType? id, ImFormsCtrlMaker maker )
         {
             ImControl ctrl;
             if (!ImControls.TryGetValue(id, out ctrl))
@@ -212,11 +212,11 @@ namespace ImForms
             return ctrl;
         }
 
-        public delegate WForms.Control ImFormsCtrlMaker(ulong? id);
+        public delegate WForms.Control ImFormsCtrlMaker(IDType? id);
 
-        public WForms.Control InitControlForClicking(WForms.Control wfCtrl, ulong? id)
+        public WForms.Control InitControlForClicking(WForms.Control wfCtrl, IDType? id)
         {
-            wfCtrl.Name = id?.ToString();
+            wfCtrl.Name = id?.Item1.ToString();
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
@@ -224,9 +224,9 @@ namespace ImForms
             return wfCtrl;
         }
 
-        public WForms.Control InitControlForClickingAndTyping(WForms.Control wfCtrl, ulong? id)
+        public WForms.Control InitControlForClickingAndTyping(WForms.Control wfCtrl, IDType? id)
         {
-            wfCtrl.Name = id?.ToString();
+            wfCtrl.Name = id?.Item1.ToString();
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
