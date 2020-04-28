@@ -8,6 +8,7 @@ using CmplTime = System.Runtime.CompilerServices;
 using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
 using IDType = System.ValueTuple<string,int,string>;
+
 namespace ImForms
 {
     class BufferedTreeView : WForms.TreeView
@@ -216,7 +217,7 @@ namespace ImForms
 
         public WForms.Control InitControlForClicking(WForms.Control wfCtrl, IDType? id)
         {
-            wfCtrl.Name = id?.Item1.ToString();
+            wfCtrl.Name = id?.Item1;
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
@@ -226,7 +227,7 @@ namespace ImForms
 
         public WForms.Control InitControlForClickingAndTyping(WForms.Control wfCtrl, IDType? id)
         {
-            wfCtrl.Name = id?.Item1.ToString();
+            wfCtrl.Name = id?.Item1;
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
@@ -280,7 +281,7 @@ namespace ImForms
                 DisplayedControls.Owner.SuspendLayout();
                 var handle = new Interop.HandleRef(DisplayedControls.Owner, DisplayedControls.Owner.Handle);
                 EnableRepaint(handle, false);
-
+                
                 DisplayedControls.Clear();
                 DisplayedControls.AddRange(sortedControls); 
                 
