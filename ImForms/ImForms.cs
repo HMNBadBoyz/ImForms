@@ -46,7 +46,7 @@ namespace ImForms
             hash.Add(id?.Item1,Cache);
             hash.Add(id?.Item2);
             hash.Add(id?.Item3);
-            return hash.GetHashCode();
+            return hash.ToHashCode();
         }
     }
 
