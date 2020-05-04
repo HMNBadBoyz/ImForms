@@ -11,6 +11,45 @@ using IDType = System.ValueTuple<string,int,string>;
 
 namespace ImForms
 {
+    public class CustomeStringComparer : IEqualityComparer<string>
+    {
+        public bool Equals(string x, string y)
+        {
+            return string.Equals(x, y);
+        }
+
+        public int GetHashCode(string obj)
+        {
+            return obj.GetDeterministicHashCode();
+        }
+    }
+
+
+    public class IdTypeComparer : IEqualityComparer<IDType?>
+    {
+        private IEqualityComparer<string> Cache;
+
+        public IdTypeComparer()
+        {
+            Cache = new CustomeStringComparer();
+        }
+        public bool Equals(IDType? x, IDType? y)
+        {
+            return x?.Item1 == y?.Item1 &&
+                   x?.Item2 == y?.Item2 &&
+                   x?.Item3 == y?.Item3;
+        }
+
+        public int GetHashCode(IDType? id)
+        {
+            var hash = new HashCode();
+            hash.Add(id?.Item1,Cache);
+            hash.Add(id?.Item2);
+            hash.Add(id?.Item3);
+            return hash.GetHashCode();
+        }
+    }
+
     class BufferedTreeView : WForms.TreeView
     {
         protected override void OnHandleCreated(EventArgs e)
@@ -49,6 +88,29 @@ namespace ImForms
     }
 
 
+    public static class HashingExtensions
+    {
+        public static int GetDeterministicHashCode(this string str)
+        {
+            unchecked
+            {
+                int hash1 = (5381 << 16) + 5381;
+                int hash2 = hash1;
+
+                for (int i = 0; i < str.Length; i += 2)
+                {
+                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                    if (i == str.Length - 1)
+                        break;
+                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                }
+
+                return hash1 + (hash2 * 1566083941);
+            }
+        }
+    }
+
+
     public class GenIDAttribute : Attribute
     {
 
@@ -67,6 +129,20 @@ namespace ImForms
         }
     }
 
+    /// <summary>
+    /// All control types in ImForms
+    /// Todo(shazan) : Look into adding custom controls and fill every default control in this
+    /// </summary>
+    public enum ImControlType
+    {
+        Textbox,
+        Label,
+        Spinner,
+        TrackBar,
+        MultilineTextbox,
+        Treeview,
+
+    }
 
     public enum ImDraw
     {
@@ -169,7 +245,7 @@ namespace ImForms
         public ImFormsMgr(WForms.Panel panel)
         {
             InteractedElementId = null;
-            ImControls = new Dictionary<IDType?, ImControl>();
+            ImControls = new Dictionary<IDType?, ImControl>(new IdTypeComparer());
             TCS = new TaskCompletionSource<bool>();
             CurrentSortKey = 0;
             DisplayedControls = panel.Controls;

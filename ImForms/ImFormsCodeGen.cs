@@ -92,14 +92,9 @@ namespace ImForms
             radioButton.Text = text;
             radioButton.AutoCheck = false;
             var wasInteracted = InteractedElementId == ctrl.ID ;
-
             radioButton.Checked = booleancheck;
-
             return wasInteracted ;
         }
-
-
-
         
         public bool SliderInt(string text,ref int value ,int minval = 0, int maxval = 1, [CmplTime.CallerFilePath] string callerfilepath ="",[CmplTime.CallerLineNumber] int callerlinenumber= 0,[CmplTime.CallerMemberName] string callermembername = "")
         {
