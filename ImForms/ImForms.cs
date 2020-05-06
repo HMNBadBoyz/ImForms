@@ -45,7 +45,7 @@ namespace ImForms
             var hash = new HashCode();
             hash.Add(id?.Item1,Cache);
             hash.Add(id?.Item2);
-            hash.Add(id?.Item3);
+            hash.Add(id?.Item3,Cache);
             return hash.ToHashCode();
         }
     }
@@ -57,7 +57,6 @@ namespace ImForms
             SendMessage(this.Handle, TVM_SETEXTENDEDSTYLE, (IntPtr)TVS_EX_DOUBLEBUFFER, (IntPtr)TVS_EX_DOUBLEBUFFER);
             base.OnHandleCreated(e);
         }
-        // Pinvoke:
         private const int TVM_SETEXTENDEDSTYLE = 0x1100 + 44;
         private const int TVM_GETEXTENDEDSTYLE = 0x1100 + 45;
         private const int TVS_EX_DOUBLEBUFFER = 0x0004;
