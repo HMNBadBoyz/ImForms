@@ -11,7 +11,54 @@ using IDType = System.ValueTuple<string,int,string>;
 
 namespace ImForms
 {
-    public class CustomeStringComparer : IEqualityComparer<string>
+    public struct IDType :IEquatable<IDType>
+    {
+        public string CallerFilePath;
+        public int CallerLineNumber;
+        public string CallerMemberName;
+
+        public IDType(string callerfilepath, int callerlinenumber, string callermembername)
+        {
+            CallerFilePath = callerfilepath;
+            CallerLineNumber = callerlinenumber;
+            CallerMemberName = callermembername;
+        }
+
+        public bool Equals(IDType other)
+        {
+            return ((CallerFilePath == other.CallerFilePath) && 
+                   (CallerLineNumber == other.CallerLineNumber) &&
+                (CallerMemberName == other.CallerMemberName));
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+            hash.Add(CallerFilePath, new CustomStringComparer());
+            hash.Add(CallerLineNumber);
+            hash.Add(CallerMemberName, new CustomStringComparer());
+            return hash.ToHashCode();
+        }
+
+        public override bool Equals(object obj)
+         {
+            return base.Equals(obj);
+         }
+
+        public static bool operator ==(IDType a,IDType b)
+        {
+            return ((a.CallerFilePath == b.CallerFilePath) &&
+                    (a.CallerLineNumber == b.CallerLineNumber) &&
+                    (a.CallerMemberName == b.CallerMemberName));
+        }
+
+        public static bool operator !=(IDType a, IDType b)
+        {
+            return !(a == b);
+        }
+
+    }
+    public class CustomStringComparer : IEqualityComparer<string>
     {
         public bool Equals(string x, string y)
         {
@@ -25,27 +72,27 @@ namespace ImForms
     }
 
 
-    public class IdTypeComparer : IEqualityComparer<IDType?>
+    public class IdTypeComparer : IEqualityComparer<IDType>
     {
         private IEqualityComparer<string> Cache;
 
         public IdTypeComparer()
         {
-            Cache = new CustomeStringComparer();
+            Cache = new CustomStringComparer();
         }
-        public bool Equals(IDType? x, IDType? y)
+        public bool Equals(IDType x, IDType y)
         {
-            return x?.Item1 == y?.Item1 &&
-                   x?.Item2 == y?.Item2 &&
-                   x?.Item3 == y?.Item3;
+            return x.CallerFilePath == y.CallerFilePath &&
+                   x.CallerMemberName == y.CallerMemberName &&
+                   x.CallerLineNumber == y.CallerLineNumber;
         }
 
-        public int GetHashCode(IDType? id)
+        public int GetHashCode(IDType id)
         {
             var hash = new HashCode();
-            hash.Add(id?.Item1,Cache);
-            hash.Add(id?.Item2);
-            hash.Add(id?.Item3,Cache);
+            hash.Add(id.CallerFilePath,Cache);
+            hash.Add(id.CallerLineNumber);
+            hash.Add(id.CallerMemberName,Cache);
             return hash.ToHashCode();
         }
     }
@@ -154,7 +201,7 @@ namespace ImForms
         public readonly WForms.Control WfControl;
         public ImDraw State { get; set; }
         public int SortKey { get; set; }
-        public IDType? ID { get; set; }
+        public IDType ID { get; set; }
         public object TempData { get; set; }
         public ImControl(WForms.Control control) { WfControl = control; }
     }
@@ -230,21 +277,21 @@ namespace ImForms
 
         private int RemainingRedraws = 0;
         private TaskCompletionSource<bool> TCS;
-        private readonly Dictionary<IDType?, ImControl> ImControls;
+        private readonly Dictionary<IDType, ImControl> ImControls;
         public WFControlList DisplayedControls;
         private int CurrentSortKey;
-        private IDType? InteractedElementId;
+        private IDType InteractedElementId;
         private ImControl LastCalledControl;
 
         // OH NOTE This could be configurable by the user in the _distant_ future
         private  int RedrawsPerInteraction = 1;
 
-        private IDType? PrevInteractedElementId;
+        private IDType PrevInteractedElementId;
 
         public ImFormsMgr(WForms.Panel panel)
         {
-            InteractedElementId = null;
-            ImControls = new Dictionary<IDType?, ImControl>(new IdTypeComparer());
+            InteractedElementId = default(IDType);
+            ImControls = new Dictionary<IDType, ImControl>(new IdTypeComparer());
             TCS = new TaskCompletionSource<bool>();
             CurrentSortKey = 0;
             DisplayedControls = panel.Controls;
@@ -266,12 +313,17 @@ namespace ImForms
             Refresh();
         }
 
-        public bool ControlExists(IDType? id)
+        public bool ControlExists(IDType id)
         {
             return ImControls.ContainsKey(id);
         }
 
-        public ImControl ProcureControl(IDType? id, ImFormsCtrlMaker maker )
+        private string GenerateNameFromID(IDType id)
+        {
+            return $"{id.CallerFilePath}#{id.CallerLineNumber}@{id.CallerMemberName}";
+        }
+
+        public ImControl ProcureControl(IDType id, ImFormsCtrlMaker maker )
         {
             ImControl ctrl;
             if (!ImControls.TryGetValue(id, out ctrl))
@@ -288,11 +340,11 @@ namespace ImForms
             return ctrl;
         }
 
-        public delegate WForms.Control ImFormsCtrlMaker(IDType? id);
+        public delegate WForms.Control ImFormsCtrlMaker(IDType id);
 
-        public WForms.Control InitControlForClicking(WForms.Control wfCtrl, IDType? id)
+        public WForms.Control InitControlForClicking(WForms.Control wfCtrl, IDType id)
         {
-            wfCtrl.Name = id?.Item1;
+            wfCtrl.Name = GenerateNameFromID(id);
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
@@ -300,9 +352,9 @@ namespace ImForms
             return wfCtrl;
         }
 
-        public WForms.Control InitControlForClickingAndTyping(WForms.Control wfCtrl, IDType? id)
+        public WForms.Control InitControlForClickingAndTyping(WForms.Control wfCtrl, IDType id)
         {
-            wfCtrl.Name = id?.Item1;
+            wfCtrl.Name = GenerateNameFromID(id);
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
@@ -325,7 +377,6 @@ namespace ImForms
         public async Task NextFrame()
         {
             PrevInteractedElementId = InteractedElementId;
-            
             const int ctrlsToTriggerCleanup = 100;
             const int ctrlsToRemoveForCleanup = 50;
 
@@ -342,7 +393,7 @@ namespace ImForms
                 }
             }
 
-            InteractedElementId = null;
+            InteractedElementId = default(IDType);
             WForms.Control[] sortedControls = ImControls.Values.Where(x => x.State == ImDraw.Drawn)
                 .OrderBy(c => c.SortKey).Select(c => c.WfControl).ToArray();
             var controlsChanged = DisplayedControls.Count != sortedControls.Length

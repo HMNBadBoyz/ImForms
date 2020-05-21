@@ -7,7 +7,6 @@ using Interop = System.Runtime.InteropServices;
 using CmplTime = System.Runtime.CompilerServices;
 using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
-using IDType = System.ValueTuple<string,int,string>;
 using System.Diagnostics;
 namespace ImForms
 {
@@ -23,7 +22,7 @@ namespace ImForms
         {
             var id = new IDType(callerfilepath,callerlinenumber,callermembername);
             bool FirstPass = !ControlExists(id);
-            var ctrl = ProcureControl(id, id1 => new WForms.Label { Name = id1?.Item1.ToString(),Tag = id, AutoSize = true });
+            var ctrl = ProcureControl(id, id1 => new WForms.Label { Name = id1.CallerFilePath,Tag = id, AutoSize = true });
             ctrl.WfControl.Text = text;
         }
 
@@ -427,7 +426,7 @@ namespace ImForms
         {
             var id = new IDType(callerfilepath,callerlinenumber,callermembername);
             bool FirstPass = !ControlExists(id);
-            var ctrl = ProcureControl(id, id1 => new WForms.PictureBox { Name = id1?.ToString(), AutoSize = true });
+            var ctrl = ProcureControl(id, id1 => new WForms.PictureBox { Name = GenerateNameFromID(id1), AutoSize = true });
             var picturebox = ctrl.WfControl as WForms.PictureBox;
             picturebox.Text = text;
             picturebox.Image = image;
@@ -440,7 +439,7 @@ namespace ImForms
         {
             var id = new IDType(callerfilepath,callerlinenumber,callermembername);
             bool FirstPass = !ControlExists(id);
-            var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = id1?.ToString(), AutoSize = true });
+            var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = GenerateNameFromID(id1), AutoSize = true });
             var spinner = ctrl.WfControl as WForms.DateTimePicker;
             spinner.Text = text;
             spinner.Value = value;
