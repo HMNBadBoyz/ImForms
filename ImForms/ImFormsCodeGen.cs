@@ -439,7 +439,7 @@ namespace ImForms
         {
             var id = new IDType(callerfilepath,callerlinenumber,callermembername);
             bool FirstPass = !ControlExists(id);
-            var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = GenerateNameFromID(id1), AutoSize = true });
+            var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = GenerateNameFromIDandControl(id1,this), AutoSize = true });
             var spinner = ctrl.WfControl as WForms.DateTimePicker;
             spinner.Text = text;
             spinner.Value = value;

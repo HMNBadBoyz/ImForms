@@ -318,9 +318,9 @@ namespace ImForms
             return ImControls.ContainsKey(id);
         }
 
-        private string GenerateNameFromID(IDType id)
+        private string GenerateNameFromIDandControl(IDType id,WForms.Control wfctrl)
         {
-            return $"{id.CallerFilePath}#{id.CallerLineNumber}@{id.CallerMemberName}";
+            return $"ImFormsMgr::{wfctrl.GetType().Name}@{id.CallerFilePath.Split(@"\\".ToCharArray()).Last()}:{id.CallerLineNumber}@{id.CallerMemberName}";
         }
 
         public ImControl ProcureControl(IDType id, ImFormsCtrlMaker maker )
@@ -344,7 +344,7 @@ namespace ImForms
 
         public WForms.Control InitControlForClicking(WForms.Control wfCtrl, IDType id)
         {
-            wfCtrl.Name = GenerateNameFromID(id);
+            wfCtrl.Name = GenerateNameFromIDandControl(id,wfCtrl);
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
@@ -354,7 +354,7 @@ namespace ImForms
 
         public WForms.Control InitControlForClickingAndTyping(WForms.Control wfCtrl, IDType id)
         {
-            wfCtrl.Name = GenerateNameFromID(id);
+            wfCtrl.Name = GenerateNameFromIDandControl(id,wfCtrl);
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
