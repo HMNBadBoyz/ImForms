@@ -8,6 +8,9 @@ using CmplTime = System.Runtime.CompilerServices;
 using WForms = System.Windows.Forms;
 using WFControlList = System.Windows.Forms.Control.ControlCollection;
 using IDType = System.ValueTuple<string,int,string>;
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("ImFormsTests")]
+[assembly: DisablePrivateReflection()]
 
 namespace ImForms
 {
@@ -318,7 +321,19 @@ namespace ImForms
             return ImControls.ContainsKey(id);
         }
 
-        private string GenerateNameFromIDandControl(IDType id,WForms.Control wfctrl)
+        internal string GenerateNameFromIDAndControlName(IDType id,string controlName)
+        {
+            return $"ImFormsMgr::{controlName}@{id.CallerFilePath.Split(@"\\".ToCharArray()).Last()}:{id.CallerLineNumber}@{id.CallerMemberName}";
+        }
+
+
+        internal string GenerateNameFromID(IDType id  )
+        {
+            return $"ImFormsMgr::{id.CallerFilePath.Split(@"\\".ToCharArray()).Last()}:{id.CallerLineNumber}@{id.CallerMemberName}";
+        }
+
+        //TODO(shazan): Figure this out
+        internal string GenerateNameFromIDAndControl(IDType id,WForms.Control wfctrl)
         {
             return $"ImFormsMgr::{wfctrl.GetType().Name}@{id.CallerFilePath.Split(@"\\".ToCharArray()).Last()}:{id.CallerLineNumber}@{id.CallerMemberName}";
         }
@@ -344,7 +359,7 @@ namespace ImForms
 
         public WForms.Control InitControlForClicking(WForms.Control wfCtrl, IDType id)
         {
-            wfCtrl.Name = GenerateNameFromIDandControl(id,wfCtrl);
+            wfCtrl.Name = GenerateNameFromIDAndControlName(id,wfCtrl.GetType().Name);
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;
@@ -354,7 +369,7 @@ namespace ImForms
 
         public WForms.Control InitControlForClickingAndTyping(WForms.Control wfCtrl, IDType id)
         {
-            wfCtrl.Name = GenerateNameFromIDandControl(id,wfCtrl);
+            wfCtrl.Name = GenerateNameFromIDAndControlName(id, wfCtrl.GetType().Name);
             wfCtrl.Tag = id;
             wfCtrl.Click += LetImGuiHandleIt;
             wfCtrl.TabStopChanged += LetImGuiHandleIt;

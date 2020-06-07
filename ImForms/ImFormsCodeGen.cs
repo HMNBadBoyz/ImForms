@@ -426,7 +426,7 @@ namespace ImForms
         {
             var id = new IDType(callerfilepath,callerlinenumber,callermembername);
             bool FirstPass = !ControlExists(id);
-            var ctrl = ProcureControl(id, id1 => new WForms.PictureBox { Name = GenerateNameFromID(id1), AutoSize = true });
+            var ctrl = ProcureControl(id, id1 => new WForms.PictureBox { Name = GenerateNameFromIDAndControlName(id1,this.GetType().Name), AutoSize = true });
             var picturebox = ctrl.WfControl as WForms.PictureBox;
             picturebox.Text = text;
             picturebox.Image = image;
@@ -439,7 +439,7 @@ namespace ImForms
         {
             var id = new IDType(callerfilepath,callerlinenumber,callermembername);
             bool FirstPass = !ControlExists(id);
-            var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = GenerateNameFromIDandControl(id1,this), AutoSize = true });
+            var ctrl = ProcureControl(id, id1 => new WForms.DateTimePicker { Name = GenerateNameFromIDAndControlName(id1,this.GetType().Name), AutoSize = true });
             var spinner = ctrl.WfControl as WForms.DateTimePicker;
             spinner.Text = text;
             spinner.Value = value;
