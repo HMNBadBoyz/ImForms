@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\shazan\\ImForms\\Weavers\\Weavers.csproj": {}
+  },
+  "projects": {
+    "E:\\shazan\\ImForms\\Weavers\\Weavers.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\shazan\\ImForms\\Weavers\\Weavers.csproj",
+        "projectName": "Weavers",
+        "projectPath": "E:\\shazan\\ImForms\\Weavers\\Weavers.csproj",
+        "packagesPath": "C:\\Users\\Shaz\\.nuget\\packages\\",
+        "outputPath": "E:\\shazan\\ImForms\\Weavers\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Shaz\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://packages.xenko.com/nuget": {}
+        },
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "dependencies": {
+            "FodyHelpers": {
+              "target": "Package",
+              "version": "[5.1.1, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

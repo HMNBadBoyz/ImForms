@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="FodyWeavers.xsd" />
+    <None Include="ImFormsCodeGen.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ImFormsCodeGen.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Fody" Version="5.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <WeaverFiles Include="$(SolutionDir)Weavers\bin\$(Configuration)\Weavers.dll" WeaverClassNames="ImFormsWeaver" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ImFormsCodeGen.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ImFormsCodeGen.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ImFormsCodeGen.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ImFormsCodeGen.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <PropertyGroup>
+    <DisableFody>true</DisableFody>
+  </PropertyGroup>
+  
+
+</Project>

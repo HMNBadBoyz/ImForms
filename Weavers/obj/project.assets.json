@@ -1,0 +1,176 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETFramework,Version=v4.7.2": {
+      "FodyHelpers/5.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/FodyHelpers.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/FodyHelpers.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        },
+        "build": {
+          "build/FodyHelpers.props": {},
+          "build/FodyHelpers.targets": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.2/win": {
+      "FodyHelpers/5.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/FodyHelpers.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/FodyHelpers.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        },
+        "build": {
+          "build/FodyHelpers.props": {},
+          "build/FodyHelpers.targets": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.2/win-x64": {
+      "FodyHelpers/5.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/FodyHelpers.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/FodyHelpers.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        },
+        "build": {
+          "build/FodyHelpers.props": {},
+          "build/FodyHelpers.targets": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.2/win-x86": {
+      "FodyHelpers/5.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/FodyHelpers.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/FodyHelpers.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        },
+        "build": {
+          "build/FodyHelpers.props": {},
+          "build/FodyHelpers.targets": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FodyHelpers/5.1.1": {
+      "sha512": "2flIHBzEKneYKZGs3cp3jWnAioCNcXJinbhy1c68ANQsxQZFf2vJogj6XNR4doOGScW/+9w8WPCEna7V1yArxg==",
+      "type": "package",
+      "path": "fodyhelpers/5.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/FodyHelpers.props",
+        "build/FodyHelpers.targets",
+        "fodyhelpers.5.1.1.nupkg.sha512",
+        "fodyhelpers.nuspec",
+        "lib/netstandard2.0/FodyHelpers.dll",
+        "lib/netstandard2.0/FodyHelpers.xml",
+        "lib/netstandard2.0/Mono.Cecil.Pdb.dll",
+        "lib/netstandard2.0/Mono.Cecil.Pdb.pdb",
+        "lib/netstandard2.0/Mono.Cecil.Rocks.dll",
+        "lib/netstandard2.0/Mono.Cecil.Rocks.pdb",
+        "lib/netstandard2.0/Mono.Cecil.dll",
+        "lib/netstandard2.0/Mono.Cecil.pdb"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    ".NETFramework,Version=v4.7.2": [
+      "FodyHelpers >= 5.1.1"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Shaz\\.nuget\\packages\\": {},
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "E:\\shazan\\ImForms\\Weavers\\ImFormsWeaver.csproj",
+      "projectName": "ImFormsWeaver",
+      "projectPath": "E:\\shazan\\ImForms\\Weavers\\ImFormsWeaver.csproj",
+      "packagesPath": "C:\\Users\\Shaz\\.nuget\\packages\\",
+      "outputPath": "E:\\shazan\\ImForms\\Weavers\\obj\\",
+      "projectStyle": "PackageReference",
+      "skipContentFileWrite": true,
+      "fallbackFolders": [
+        "C:\\Microsoft\\Xamarin\\NuGet\\"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\Shaz\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net472"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Users\\Shaz\\.devnuget": {},
+        "https://api.nuget.org/v3/index.json": {},
+        "https://packages.xenko.com/nuget": {}
+      },
+      "frameworks": {
+        "net472": {
+          "projectReferences": {}
+        }
+      }
+    },
+    "frameworks": {
+      "net472": {
+        "dependencies": {
+          "FodyHelpers": {
+            "target": "Package",
+            "version": "[5.1.1, )"
+          }
+        }
+      }
+    },
+    "runtimes": {
+      "win": {
+        "#import": []
+      },
+      "win-x64": {
+        "#import": []
+      },
+      "win-x86": {
+        "#import": []
+      }
+    }
+  }
+}
